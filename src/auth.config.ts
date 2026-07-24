@@ -8,7 +8,10 @@ export const authConfig = {
   pages: {
     signIn: "/login",
   },
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days — how long a login stays valid
+  },
   trustHost: true,
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
