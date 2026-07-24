@@ -5,11 +5,15 @@
 export type HomelabService = {
   name: string;
   category: string;
-  status: "running" | "stopped" | string;
+  status: "running" | "stopped" | "down" | string;
+  responseMs?: number | null;
+  httpStatus?: number | null;
+  sslDaysLeft?: number | null;
 };
 
 export type HomelabStatus = {
   updatedAt: string;
+  source?: "blackbox" | "proxmox" | string;
   node: {
     name: string;
     status: string;

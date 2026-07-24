@@ -1,16 +1,20 @@
 import { FiServer, FiActivity, FiCircle } from "react-icons/fi";
-import { getHomelabStatus, formatUptime } from "@/lib/homelab";
+import {
+  getHomelabStatus,
+  formatUptime,
+  type HomelabService,
+} from "@/lib/homelab";
 
 // Curated services shown in the static fallback (before live data is wired up).
-const fallbackServices = [
-  { name: "Jellyfin", category: "Media" },
-  { name: "Plex", category: "Media" },
-  { name: "Grafana", category: "Monitoring" },
-  { name: "Prometheus", category: "Monitoring" },
-  { name: "Pi-hole", category: "Networking" },
-  { name: "Nginx Proxy Manager", category: "Networking" },
-  { name: "Homarr", category: "Dashboard" },
-  { name: "Docker", category: "Apps" },
+const fallbackServices: HomelabService[] = [
+  { name: "Jellyfin", category: "Media", status: "running" },
+  { name: "Plex", category: "Media", status: "running" },
+  { name: "Grafana", category: "Monitoring", status: "running" },
+  { name: "Prometheus", category: "Monitoring", status: "running" },
+  { name: "Pi-hole", category: "Networking", status: "running" },
+  { name: "Nginx Proxy Manager", category: "Networking", status: "running" },
+  { name: "Homarr", category: "Dashboard", status: "running" },
+  { name: "Docker", category: "Apps", status: "running" },
 ];
 
 function Meter({ label, value, display }: { label: string; value: number; display: string }) {
@@ -96,25 +100,46 @@ export async function HomelabStatus() {
 
         {/* Services grid */}
         <div className="card p-5">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
             {services.map((s) => {
-              const running = !("status" in s) || s.status === "running";
+              const up = s.status === "running";
+              const down = s.status === "down";
+              const ms = s.responseMs ?? null;
               return (
-                <div key={s.name} className="flex items-center gap-2 text-sm">
-                  <FiCircle
-                    className={`h-2 w-2 shrink-0 ${
-                      running
-                        ? "fill-emerald-400 text-emerald-400"
-                        : "fill-[var(--color-faint)] text-[var(--color-faint)]"
-                    }`}
-                  />
-                  <span className="truncate text-[var(--color-foreground)]">
-                    {s.name}
+                <div
+                  key={s.name}
+                  className="flex items-center justify-between gap-2 text-sm"
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    <FiCircle
+                      className={`h-2 w-2 shrink-0 ${
+                        up
+                          ? "fill-emerald-400 text-emerald-400"
+                          : down
+                            ? "fill-red-400 text-red-400"
+                            : "fill-[var(--color-faint)] text-[var(--color-faint)]"
+                      }`}
+                    />
+                    <span className="truncate text-[var(--color-foreground)]">
+                      {s.name}
+                    </span>
                   </span>
+                  {ms != null ? (
+                    <span className="shrink-0 font-mono text-xs text-[var(--color-faint)]">
+                      {ms}ms
+                    </span>
+                  ) : down ? (
+                    <span className="shrink-0 text-xs text-red-400">down</span>
+                  ) : null}
                 </div>
               );
             })}
           </div>
+          {live && status!.source === "blackbox" && (
+            <p className="mt-4 border-t border-[var(--color-border)] pt-3 text-xs text-[var(--color-faint)]">
+              Live uptime &amp; response times via my Prometheus Blackbox exporter.
+            </p>
+          )}
         </div>
       </div>
     </section>

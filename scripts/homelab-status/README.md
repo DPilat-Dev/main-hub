@@ -92,6 +92,21 @@ Bearer token.
 Redeploy (or wait for revalidation) and the Homelab section switches from the
 static card to **live** node uptime, CPU/RAM, and running services.
 
+## Live service uptime via Blackbox (recommended)
+
+If you run a **Prometheus Blackbox exporter**, the collector can report real
+service health — up/down, response time, and SSL cert expiry — instead of just
+"is the LXC running".
+
+1. Set `BLACKBOX_URL` (e.g. `http://192.168.1.66:9115`) — already wired in
+   `docker-compose.yml`.
+2. Edit the `PROBES` list in `collector.mjs` with the URLs you want checked
+   (your public sites and homelab subdomains fronted by Nginx Proxy Manager).
+
+The collector calls Blackbox's `/probe` endpoint directly, so **no Prometheus
+scrape config is required**. Without `BLACKBOX_URL` it falls back to the Proxmox
+`SERVICES` allowlist.
+
 ## Security notes
 
 - The Proxmox token must be **read-only** (`PVEAuditor`). The collector only

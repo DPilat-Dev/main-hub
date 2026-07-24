@@ -12,6 +12,9 @@ services:
       #   PVE_TOKEN=root@pam!claude-readonly=YOUR-SECRET
       PVE_TOKEN: "${PVE_TOKEN:?set PVE_TOKEN in .env}"
       LISTEN_PORT: "8787"
+      # Enable real service uptime/latency via your Blackbox exporter.
+      # Comment out to fall back to "is the LXC running" from Proxmox.
+      BLACKBOX_URL: "http://192.168.1.66:9115"
       # Optional: protect the endpoint with a shared secret (also set
       # HOMELAB_STATUS_TOKEN to the same value on Vercel).
       # STATUS_TOKEN: "${STATUS_TOKEN:-}"
