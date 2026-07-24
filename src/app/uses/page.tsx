@@ -35,7 +35,7 @@ function SpecCard({
   specs: Spec[];
 }) {
   return (
-    <div className="card p-6">
+    <div className="card card-hover p-6">
       <div className="mb-5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="grid h-11 w-11 place-items-center rounded-lg bg-gradient-to-br from-[var(--color-accent)]/20 to-[var(--color-accent-2)]/10 text-[var(--color-accent-soft)]">
