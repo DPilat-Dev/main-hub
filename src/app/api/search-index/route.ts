@@ -1,20 +1,28 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 import { site } from "@/lib/site";
 
 export const revalidate = 60;
 
 export async function GET() {
   const [projects, posts] = await Promise.all([
-    prisma.project.findMany({
-      orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
-      select: { title: true, slug: true, summary: true },
-    }),
-    prisma.post.findMany({
-      where: { published: true },
-      orderBy: { publishedAt: "desc" },
-      select: { title: true, slug: true, excerpt: true },
-    }),
+    safeQuery(
+      () =>
+        prisma.project.findMany({
+          orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
+          select: { title: true, slug: true, summary: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.post.findMany({
+          where: { published: true },
+          orderBy: { publishedAt: "desc" },
+          select: { title: true, slug: true, excerpt: true },
+        }),
+      [],
+    ),
   ]);
 
   const items = [

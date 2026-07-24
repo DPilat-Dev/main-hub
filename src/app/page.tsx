@@ -5,7 +5,7 @@ import {
   FiFileText,
   FiMapPin,
 } from "react-icons/fi";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 import { site } from "@/lib/site";
 import { resume } from "@/lib/resume";
 import { SocialLinks } from "@/components/site/SocialLinks";
@@ -19,16 +19,24 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const [projects, posts] = await Promise.all([
-    prisma.project.findMany({
-      where: { featured: true },
-      orderBy: { sortOrder: "asc" },
-      take: 3,
-    }),
-    prisma.post.findMany({
-      where: { published: true },
-      orderBy: { publishedAt: "desc" },
-      take: 3,
-    }),
+    safeQuery(
+      () =>
+        prisma.project.findMany({
+          where: { featured: true },
+          orderBy: { sortOrder: "asc" },
+          take: 3,
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.post.findMany({
+          where: { published: true },
+          orderBy: { publishedAt: "desc" },
+          take: 3,
+        }),
+      [],
+    ),
   ]);
 
   const stats = [

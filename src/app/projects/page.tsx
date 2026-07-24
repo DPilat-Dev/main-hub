@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 import { ProjectCard } from "@/components/site/ProjectCard";
 
 export const revalidate = 60;
@@ -10,9 +10,17 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany({
-    orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
-  });
+  const projects = await safeQuery(
+    () =>
+      prisma.project.findMany({
+        orderBy: [
+          { featured: "desc" },
+          { sortOrder: "asc" },
+          { createdAt: "desc" },
+        ],
+      }),
+    [],
+  );
 
   return (
     <div className="container-page py-14">

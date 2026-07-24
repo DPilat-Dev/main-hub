@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 import { PostCard } from "@/components/site/PostCard";
 
 export const revalidate = 60;
@@ -10,10 +10,14 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { publishedAt: "desc" },
-  });
+  const posts = await safeQuery(
+    () =>
+      prisma.post.findMany({
+        where: { published: true },
+        orderBy: { publishedAt: "desc" },
+      }),
+    [],
+  );
 
   return (
     <div className="container-page py-14">
