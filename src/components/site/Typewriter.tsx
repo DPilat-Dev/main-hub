@@ -65,12 +65,26 @@ export function Typewriter({
   }, [phrases, typingSpeed, deletingSpeed, holdDelay]);
 
   return (
-    <span className={className}>
-      {text}
-      <span
-        aria-hidden="true"
-        className="typewriter-cursor ml-0.5 inline-block w-[2px] -translate-y-[2px] self-stretch"
-      />
+    // Grid stacks every phrase in the same cell so the box always reserves the
+    // height of the tallest one — the live text overlays it with zero layout
+    // shift, so buttons below never move.
+    <span className="grid grid-cols-1">
+      {phrases.map((phrase, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          className="invisible [grid-area:1/1]"
+        >
+          {phrase}
+        </span>
+      ))}
+      <span className={`[grid-area:1/1] ${className}`}>
+        {text}
+        <span
+          aria-hidden="true"
+          className="typewriter-cursor ml-0.5 inline-block w-[2px] -translate-y-[2px] self-stretch"
+        />
+      </span>
     </span>
   );
 }
