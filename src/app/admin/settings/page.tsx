@@ -1,6 +1,13 @@
 import { getSettings } from "@/lib/settings";
 import { saveSettings } from "@/app/admin/actions";
-import { Field, Input, Textarea, Toggle, SubmitButton } from "@/components/admin/fields";
+import {
+  Field,
+  Input,
+  Textarea,
+  Toggle,
+  Select,
+  SubmitButton,
+} from "@/components/admin/fields";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +59,39 @@ export default async function AdminSettingsPage() {
         >
           <MediaPicker name="heroImage" defaultValue={s.heroImage} />
         </Field>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Image shape">
+            <Select
+              name="heroImageShape"
+              defaultValue={s.heroImageShape}
+              options={[
+                { value: "square", label: "Square" },
+                { value: "portrait", label: "Portrait" },
+                { value: "circle", label: "Circle" },
+              ]}
+            />
+          </Field>
+          <Field label="Image position">
+            <Select
+              name="heroImagePosition"
+              defaultValue={s.heroImagePosition}
+              options={[
+                { value: "right", label: "Right" },
+                { value: "left", label: "Left" },
+              ]}
+            />
+          </Field>
+          <Field label="Border ring">
+            <div className="pt-2.5">
+              <Toggle
+                name="heroImageRing"
+                label="Accent ring"
+                defaultChecked={s.heroImageRing}
+              />
+            </div>
+          </Field>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Email">

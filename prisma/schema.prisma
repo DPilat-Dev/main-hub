@@ -82,9 +82,12 @@ model SiteSettings {
   location         String   @default("")
   githubUrl        String   @default("")
   linkedinUrl      String   @default("")
-  heroImage        String   @default("")
-  availableForWork Boolean  @default(true)
-  updatedAt        DateTime @updatedAt
+  heroImage         String  @default("")
+  heroImageShape    String  @default("square") // square | circle | portrait
+  heroImagePosition String  @default("right") // left | right
+  heroImageRing     Boolean @default(false)
+  availableForWork  Boolean @default(true)
+  updatedAt         DateTime @updatedAt
 }
 
 /// Private dashboard links (server, subdomains, tools). Admin-only.

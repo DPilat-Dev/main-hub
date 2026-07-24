@@ -39,6 +39,26 @@ export function Textarea(
   );
 }
 
+export function Select({
+  name,
+  defaultValue,
+  options,
+}: {
+  name: string;
+  defaultValue?: string;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <select name={name} defaultValue={defaultValue} className={inputClass}>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 export function Toggle({
   name,
   label,

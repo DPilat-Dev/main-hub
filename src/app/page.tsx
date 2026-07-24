@@ -52,11 +52,21 @@ export default async function HomePage() {
       <section
         className={
           settings.heroImage
-            ? "grid items-center gap-10 pt-16 pb-14 sm:pt-24 lg:grid-cols-[1.4fr_1fr]"
+            ? `grid items-center gap-10 pt-16 pb-14 sm:pt-24 ${
+                settings.heroImagePosition === "left"
+                  ? "lg:grid-cols-[1fr_1.4fr]"
+                  : "lg:grid-cols-[1.4fr_1fr]"
+              }`
             : "pt-16 pb-14 sm:pt-24"
         }
       >
-        <div className="flex flex-col items-start gap-6">
+        <div
+          className={`flex flex-col items-start gap-6 ${
+            settings.heroImage && settings.heroImagePosition === "left"
+              ? "lg:order-2"
+              : ""
+          }`}
+        >
           {settings.availableForWork && (
             <span className="chip">
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -92,13 +102,27 @@ export default async function HomePage() {
         </div>
 
         {settings.heroImage && (
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          <div
+            className={`relative mx-auto w-full max-w-sm lg:max-w-none ${
+              settings.heroImagePosition === "left" ? "lg:order-1" : "lg:order-2"
+            }`}
+          >
             <div className="pointer-events-none absolute -inset-6 rounded-full bg-gradient-to-br from-[var(--color-accent)]/25 to-[var(--color-accent-2)]/15 blur-3xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={settings.heroImage}
               alt={settings.name}
-              className="relative aspect-square w-full rounded-2xl border border-[var(--color-border)] object-cover shadow-2xl"
+              className={`relative w-full border border-[var(--color-border)] object-cover shadow-2xl ${
+                settings.heroImageShape === "circle"
+                  ? "aspect-square rounded-full"
+                  : settings.heroImageShape === "portrait"
+                    ? "aspect-[3/4] rounded-2xl"
+                    : "aspect-square rounded-2xl"
+              } ${
+                settings.heroImageRing
+                  ? "ring-2 ring-[var(--color-accent)]/50 ring-offset-4 ring-offset-[var(--color-bg)]"
+                  : ""
+              }`}
             />
           </div>
         )}
