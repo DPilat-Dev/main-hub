@@ -4,14 +4,17 @@ import { useEditor, EditorContent, type Editor as TiptapEditor } from "@tiptap/r
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import Image from "@tiptap/extension-image";
 import { useState } from "react";
 import {
   FiBold,
   FiItalic,
   FiCode,
   FiList,
+  FiImage,
   FiLink as FiLinkIcon,
 } from "react-icons/fi";
+import { MediaLibrary } from "./MediaLibrary";
 import {
   LuHeading2,
   LuHeading3,
@@ -46,7 +49,13 @@ function ToolbarButton({
   );
 }
 
-function Toolbar({ editor }: { editor: TiptapEditor }) {
+function Toolbar({
+  editor,
+  onImage,
+}: {
+  editor: TiptapEditor;
+  onImage: () => void;
+}) {
   const setLink = () => {
     const prev = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("Link URL", prev ?? "https://");
@@ -126,6 +135,9 @@ function Toolbar({ editor }: { editor: TiptapEditor }) {
       >
         <FiLinkIcon className="h-4 w-4" />
       </ToolbarButton>
+      <ToolbarButton title="Insert image" onClick={onImage}>
+        <FiImage className="h-4 w-4" />
+      </ToolbarButton>
     </div>
   );
 }
@@ -138,12 +150,14 @@ export function Editor({
   defaultValue?: string;
 }) {
   const [html, setHtml] = useState(defaultValue);
+  const [mediaOpen, setMediaOpen] = useState(false);
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
       Link.configure({ openOnClick: false, autolink: true }),
+      Image.configure({ HTMLAttributes: { class: "rounded-lg" } }),
       Placeholder.configure({ placeholder: "Write your post…" }),
     ],
     content: defaultValue,
@@ -158,10 +172,18 @@ export function Editor({
 
   return (
     <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)]">
-      {editor && <Toolbar editor={editor} />}
+      {editor && <Toolbar editor={editor} onImage={() => setMediaOpen(true)} />}
       <EditorContent editor={editor} />
       {/* Hidden input carries HTML into the server action form. */}
       <input type="hidden" name={name} value={html} />
+      <MediaLibrary
+        open={mediaOpen}
+        onClose={() => setMediaOpen(false)}
+        onSelect={(url) => {
+          editor?.chain().focus().setImage({ src: url }).run();
+          setMediaOpen(false);
+        }}
+      />
     </div>
   );
 }

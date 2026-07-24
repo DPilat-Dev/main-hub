@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Post } from "@prisma/client";
 import { savePost } from "@/app/admin/actions";
 import { Editor } from "./Editor";
+import { MediaPicker } from "./MediaPicker";
 import { Field, Input, Textarea, Toggle, SubmitButton } from "./fields";
 
 export function PostForm({ post }: { post?: Post }) {
@@ -34,8 +35,8 @@ export function PostForm({ post }: { post?: Post }) {
         <Field label="Tags" hint="Comma-separated, e.g. dotnet, ci-cd">
           <Input name="tags" defaultValue={post?.tags.join(", ")} />
         </Field>
-        <Field label="Cover image URL" hint="Optional.">
-          <Input name="coverImage" defaultValue={post?.coverImage ?? ""} />
+        <Field label="Cover image" hint="Shown at the top of the post.">
+          <MediaPicker name="coverImage" defaultValue={post?.coverImage ?? ""} />
         </Field>
       </div>
 

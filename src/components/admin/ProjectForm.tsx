@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Project } from "@prisma/client";
 import { saveProject } from "@/app/admin/actions";
 import { Editor } from "./Editor";
+import { MediaPicker } from "./MediaPicker";
 import { Field, Input, Textarea, Toggle, SubmitButton } from "./fields";
 
 export function ProjectForm({ project }: { project?: Project }) {
@@ -24,6 +25,13 @@ export function ProjectForm({ project }: { project?: Project }) {
 
       <Field label="Description">
         <Editor name="description" defaultValue={project?.description ?? ""} />
+      </Field>
+
+      <Field
+        label="Cover image"
+        hint="Optional — overrides the auto-generated site screenshot."
+      >
+        <MediaPicker name="coverImage" defaultValue={project?.coverImage ?? ""} />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">

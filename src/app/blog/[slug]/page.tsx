@@ -88,6 +88,15 @@ export default async function PostPage({ params }: Params) {
         )}
       </header>
 
+      {post.coverImage && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={post.coverImage}
+          alt={post.title}
+          className="mt-8 w-full rounded-xl border border-[var(--color-border)] object-cover"
+        />
+      )}
+
       <div
         className="prose prose-invert mt-8 max-w-none"
         dangerouslySetInnerHTML={{ __html: post.content }}
