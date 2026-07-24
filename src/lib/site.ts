@@ -13,7 +13,7 @@ export const site = {
   ],
   description:
     "Software Engineer with 8+ years building and stabilizing SaaS platforms. Self-hoster, hardware tinkerer, and AI-assisted builder. Resume, projects, and writing on .NET, cloud, and reliable delivery.",
-  url: "https://davidpilat.dev",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dpilat-dev.vercel.app",
   location: "Lynnwood, WA",
   email: "david.j.pilat@gmail.com",
   socials: {

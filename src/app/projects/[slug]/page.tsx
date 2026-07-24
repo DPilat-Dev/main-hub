@@ -14,7 +14,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const project = await prisma.project.findUnique({ where: { slug } });
   if (!project) return { title: "Project not found" };
-  return { title: project.title, description: project.summary };
+  const ogImage = `/api/og?tag=Project&title=${encodeURIComponent(project.title)}&subtitle=${encodeURIComponent(project.summary)}`;
+  return {
+    title: project.title,
+    description: project.summary,
+    openGraph: {
+      title: project.title,
+      description: project.summary,
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", images: [ogImage] },
+  };
 }
 
 export default async function ProjectPage({ params }: Params) {

@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { FiArrowLeft } from "react-icons/fi";
 import { prisma } from "@/lib/prisma";
 import { formatDate, readingTime } from "@/lib/format";
+import { site } from "@/lib/site";
+import { JsonLd } from "@/components/site/JsonLd";
 
 export const revalidate = 60;
 
@@ -13,10 +15,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.post.findUnique({ where: { slug } });
   if (!post || !post.published) return { title: "Post not found" };
+  const ogImage = `/api/og?tag=Blog&title=${encodeURIComponent(post.title)}&subtitle=${encodeURIComponent(post.excerpt ?? "")}`;
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
-    openGraph: { title: post.title, description: post.excerpt ?? undefined },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt ?? undefined,
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", images: [ogImage] },
   };
 }
 
@@ -30,6 +39,19 @@ export default async function PostPage({ params }: Params) {
 
   return (
     <article className="container-page max-w-3xl py-14">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt ?? undefined,
+          datePublished: post.publishedAt?.toISOString(),
+          dateModified: post.updatedAt.toISOString(),
+          author: { "@type": "Person", name: post.author?.name ?? site.name },
+          url: `${site.url}/blog/${post.slug}`,
+          keywords: post.tags.join(", "),
+        }}
+      />
       <Link
         href="/blog"
         className="inline-flex items-center gap-1.5 text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
