@@ -168,6 +168,37 @@ export async function deleteLink(formData: FormData) {
   revalidatePath("/admin/links");
 }
 
+/* ───────────────────────── Site settings ───────────────────── */
+
+export async function saveSettings(formData: FormData) {
+  await requireAdmin();
+
+  const data = {
+    name: toStr(formData.get("name")),
+    role: toStr(formData.get("role")),
+    tagline: toStr(formData.get("tagline")),
+    intro: toStr(formData.get("intro")),
+    heroPhrases: toStr(formData.get("heroPhrases"))
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    email: toStr(formData.get("email")),
+    location: toStr(formData.get("location")),
+    githubUrl: toStr(formData.get("githubUrl")),
+    linkedinUrl: toStr(formData.get("linkedinUrl")),
+    availableForWork: formData.get("availableForWork") === "on",
+  };
+
+  await prisma.siteSettings.upsert({
+    where: { id: 1 },
+    update: data,
+    create: { id: 1, ...data },
+  });
+
+  revalidatePath("/", "layout"); // settings appear site-wide
+  redirect("/admin/settings");
+}
+
 /* ─────────────────────────── Auth ──────────────────────────── */
 
 export async function doSignOut() {

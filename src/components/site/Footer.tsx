@@ -3,14 +3,26 @@ import { FiLock } from "react-icons/fi";
 import { site } from "@/lib/site";
 import { SocialLinks } from "./SocialLinks";
 
-export function Footer() {
+type Socials = { github: string; linkedin: string; email: string };
+
+export function Footer({
+  siteName = site.name,
+  role = site.role,
+  location = site.location,
+  socials = site.socials,
+}: {
+  siteName?: string;
+  role?: string;
+  location?: string;
+  socials?: Socials;
+}) {
   return (
     <footer className="mt-20 border-t border-[var(--color-border)]">
       <div className="container-page flex flex-col items-center justify-between gap-6 py-10 sm:flex-row">
         <div className="text-center sm:text-left">
-          <p className="font-semibold">{site.name}</p>
+          <p className="font-semibold">{siteName}</p>
           <p className="text-sm text-[var(--color-faint)]">
-            {site.role} · {site.location}
+            {role} · {location}
           </p>
         </div>
 
@@ -26,11 +38,11 @@ export function Footer() {
           ))}
         </nav>
 
-        <SocialLinks />
+        <SocialLinks socials={socials} />
       </div>
       <div className="container-page flex flex-col items-center justify-between gap-3 pb-8 text-xs text-[var(--color-faint)] sm:flex-row">
         <span>
-          © {new Date().getFullYear()} {site.name}. Built with Next.js &amp;
+          © {new Date().getFullYear()} {siteName}. Built with Next.js &amp;
           Tailwind.
         </span>
         <Link

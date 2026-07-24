@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { site } from "@/lib/site";
+import { getSettings } from "@/lib/settings";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -11,38 +12,43 @@ import { JsonLd } from "@/components/site/JsonLd";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: {
-    default: `${site.name} — ${site.role}`,
-    template: `%s · ${site.name}`,
-  },
-  description: site.description,
-  alternates: {
-    types: {
-      "application/rss+xml": [{ url: "/rss.xml", title: `${site.name} — Blog` }],
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSettings();
+  return {
+    metadataBase: new URL(site.url),
+    title: {
+      default: `${s.name} — ${s.role}`,
+      template: `%s · ${s.name}`,
     },
-  },
-  openGraph: {
-    title: `${site.name} — ${site.role}`,
     description: site.description,
-    url: site.url,
-    siteName: site.name,
-    type: "website",
-    images: [
-      {
-        url: `/api/og?title=${encodeURIComponent(site.name)}&subtitle=${encodeURIComponent(site.role)}`,
-        width: 1200,
-        height: 630,
+    alternates: {
+      types: {
+        "application/rss+xml": [{ url: "/rss.xml", title: `${s.name} — Blog` }],
       },
-    ],
-  },
-  twitter: { card: "summary_large_image" },
-};
+    },
+    openGraph: {
+      title: `${s.name} — ${s.role}`,
+      description: site.description,
+      url: site.url,
+      siteName: s.name,
+      type: "website",
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent(s.name)}&subtitle=${encodeURIComponent(s.role)}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: { card: "summary_large_image" },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const s = await getSettings();
+
   return (
     <html
       lang="en"
@@ -53,22 +59,27 @@ export default function RootLayout({
           data={{
             "@context": "https://schema.org",
             "@type": "Person",
-            name: site.name,
-            jobTitle: site.role,
+            name: s.name,
+            jobTitle: s.role,
             url: site.url,
-            email: site.email,
+            email: s.email,
             address: {
               "@type": "PostalAddress",
               addressLocality: "Lynnwood",
               addressRegion: "WA",
               addressCountry: "US",
             },
-            sameAs: [site.socials.github, site.socials.linkedin],
+            sameAs: [s.githubUrl, s.linkedinUrl],
           }}
         />
-        <Navbar />
+        <Navbar siteName={s.name} socials={s.socials} />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer
+          siteName={s.name}
+          role={s.role}
+          location={s.location}
+          socials={s.socials}
+        />
         <Analytics />
         <SpeedInsights />
       </body>

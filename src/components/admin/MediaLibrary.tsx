@@ -11,13 +11,15 @@ export type MediaImage = {
 };
 
 export function MediaLibrary({
-  open,
-  onClose,
+  open = false,
+  onClose = () => {},
   onSelect,
+  embedded = false,
 }: {
-  open: boolean;
-  onClose: () => void;
+  open?: boolean;
+  onClose?: () => void;
   onSelect?: (url: string) => void;
+  embedded?: boolean;
 }) {
   const [images, setImages] = useState<MediaImage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,8 +43,8 @@ export function MediaLibrary({
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (open) refresh();
-  }, [open, refresh]);
+    if (open || embedded) refresh();
+  }, [open, embedded, refresh]);
 
   const upload = useCallback(
     async (files: FileList | null) => {
@@ -79,16 +81,24 @@ export function MediaLibrary({
     });
   }, []);
 
-  if (!open) return null;
+  if (!embedded && !open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      onClick={onClose}
+      className={
+        embedded
+          ? "contents"
+          : "fixed inset-0 z-[110] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      }
+      onClick={embedded ? undefined : onClose}
     >
       <div
-        className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-surface)]"
-        onClick={(e) => e.stopPropagation()}
+        className={`flex w-full flex-col overflow-hidden rounded-xl border bg-[var(--color-surface)] ${
+          embedded
+            ? "border-[var(--color-border)]"
+            : "max-h-[85vh] max-w-3xl border-[var(--color-border-strong)]"
+        }`}
+        onClick={embedded ? undefined : (e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4">
           <h2 className="font-semibold">Media library</h2>
@@ -102,14 +112,16 @@ export function MediaLibrary({
               <FiUploadCloud className="h-4 w-4" />
               {uploading ? "Uploading…" : "Upload"}
             </button>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="grid h-9 w-9 place-items-center rounded-lg text-[var(--color-muted)] hover:bg-[var(--color-surface-2)]"
-            >
-              <FiX className="h-5 w-5" />
-            </button>
+            {!embedded && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="grid h-9 w-9 place-items-center rounded-lg text-[var(--color-muted)] hover:bg-[var(--color-surface-2)]"
+              >
+                <FiX className="h-5 w-5" />
+              </button>
+            )}
           </div>
         </div>
 

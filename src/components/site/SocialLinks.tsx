@@ -2,13 +2,20 @@ import Link from "next/link";
 import { FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
 import { site } from "@/lib/site";
 
-const items = [
-  { href: site.socials.github, label: "GitHub", Icon: FiGithub },
-  { href: site.socials.linkedin, label: "LinkedIn", Icon: FiLinkedin },
-  { href: site.socials.email, label: "Email", Icon: FiMail },
-];
+type Socials = { github: string; linkedin: string; email: string };
 
-export function SocialLinks({ className = "" }: { className?: string }) {
+export function SocialLinks({
+  className = "",
+  socials = site.socials,
+}: {
+  className?: string;
+  socials?: Socials;
+}) {
+  const items = [
+    { href: socials.github, label: "GitHub", Icon: FiGithub },
+    { href: socials.linkedin, label: "LinkedIn", Icon: FiLinkedin },
+    { href: socials.email, label: "Email", Icon: FiMail },
+  ];
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {items.map(({ href, label, Icon }) => (

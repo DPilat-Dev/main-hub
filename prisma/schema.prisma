@@ -70,6 +70,22 @@ model Project {
   @@index([featured, sortOrder])
 }
 
+/// Editable site settings (singleton row, id = 1). Falls back to code defaults.
+model SiteSettings {
+  id               Int      @id @default(1)
+  name             String   @default("")
+  role             String   @default("")
+  tagline          String   @default("")
+  intro            String   @default("")
+  heroPhrases      String[] @default([])
+  email            String   @default("")
+  location         String   @default("")
+  githubUrl        String   @default("")
+  linkedinUrl      String   @default("")
+  availableForWork Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+}
+
 /// Private dashboard links (server, subdomains, tools). Admin-only.
 model DashboardLink {
   id          String   @id @default(cuid())

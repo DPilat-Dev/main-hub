@@ -8,7 +8,15 @@ import { site } from "@/lib/site";
 import { SocialLinks } from "./SocialLinks";
 import { CommandPalette } from "./CommandPalette";
 
-export function Navbar() {
+type Socials = { github: string; linkedin: string; email: string };
+
+export function Navbar({
+  siteName = site.name,
+  socials = site.socials,
+}: {
+  siteName?: string;
+  socials?: Socials;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -25,7 +33,7 @@ export function Navbar() {
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-2)] text-white">
             <FiTerminal className="h-4 w-4" />
           </span>
-          <span className="tracking-tight">{site.name}</span>
+          <span className="tracking-tight">{siteName}</span>
         </Link>
 
         {/* Desktop */}
@@ -45,7 +53,7 @@ export function Navbar() {
           ))}
           <div className="mx-2 h-5 w-px bg-[var(--color-border)]" />
           <CommandPalette />
-          <SocialLinks />
+          <SocialLinks socials={socials} />
         </div>
 
         {/* Mobile toggle */}
@@ -77,7 +85,7 @@ export function Navbar() {
               </Link>
             ))}
             <div className="px-3 pt-3">
-              <SocialLinks />
+              <SocialLinks socials={socials} />
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import {
   FiMapPin,
 } from "react-icons/fi";
 import { prisma, safeQuery } from "@/lib/prisma";
-import { site } from "@/lib/site";
+import { getSettings } from "@/lib/settings";
 import { resume } from "@/lib/resume";
 import { SocialLinks } from "@/components/site/SocialLinks";
 import { Typewriter } from "@/components/site/Typewriter";
@@ -18,6 +18,7 @@ import { GitHubSection } from "@/components/site/GitHubSection";
 export const revalidate = 60;
 
 export default async function HomePage() {
+  const settings = await getSettings();
   const [projects, posts] = await Promise.all([
     safeQuery(
       () =>
@@ -49,21 +50,23 @@ export default async function HomePage() {
     <div className="container-page">
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="flex flex-col items-start gap-6 pt-16 pb-14 sm:pt-24">
-        <span className="chip">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          Available for new opportunities
-        </span>
+        {settings.availableForWork && (
+          <span className="chip">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            Available for new opportunities
+          </span>
+        )}
 
         <h1 className="max-w-3xl text-4xl font-bold leading-[1.15] tracking-tight sm:text-6xl">
-          Hi, I&apos;m {resume.name.split(" ")[0]} — I build{" "}
+          Hi, I&apos;m {settings.name.split(" ")[0]} — I build{" "}
           <Typewriter
-            phrases={site.heroPhrases}
+            phrases={settings.heroPhrases}
             className="accent-gradient-text"
           />
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]">
-          {site.intro}
+          {settings.intro}
         </p>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -73,11 +76,11 @@ export default async function HomePage() {
           <Link href="/projects" className="btn btn-ghost">
             See projects <FiArrowRight className="h-4 w-4" />
           </Link>
-          <SocialLinks className="ml-1" />
+          <SocialLinks className="ml-1" socials={settings.socials} />
         </div>
 
         <div className="flex items-center gap-1.5 text-sm text-[var(--color-faint)]">
-          <FiMapPin className="h-4 w-4" /> {site.location}
+          <FiMapPin className="h-4 w-4" /> {settings.location}
         </div>
       </section>
 
@@ -174,7 +177,7 @@ export default async function HomePage() {
               projects. The fastest way to reach me is email.
             </p>
             <div className="mt-6 flex justify-center">
-              <a href={site.socials.email} className="btn btn-primary">
+              <a href={settings.socials.email} className="btn btn-primary">
                 Get in touch <FiArrowRight className="h-4 w-4" />
               </a>
             </div>

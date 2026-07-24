@@ -7,6 +7,8 @@ import {
   FiFileText,
   FiFolder,
   FiLink,
+  FiImage,
+  FiSettings,
   FiExternalLink,
   FiLogOut,
 } from "react-icons/fi";
@@ -16,7 +18,9 @@ const links = [
   { href: "/admin", label: "Overview", Icon: FiGrid, exact: true },
   { href: "/admin/posts", label: "Blog posts", Icon: FiFileText },
   { href: "/admin/projects", label: "Projects", Icon: FiFolder },
+  { href: "/admin/media", label: "Media", Icon: FiImage },
   { href: "/admin/links", label: "Dashboard links", Icon: FiLink },
+  { href: "/admin/settings", label: "Site settings", Icon: FiSettings },
 ];
 
 export function Sidebar({ userName }: { userName?: string | null }) {
