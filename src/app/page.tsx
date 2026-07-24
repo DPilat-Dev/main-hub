@@ -122,6 +122,10 @@ export default async function HomePage() {
                 settings.heroImageRing
                   ? "ring-2 ring-[var(--color-accent)]/50 ring-offset-4 ring-offset-[var(--color-bg)]"
                   : ""
+              } ${
+                settings.heroImageHover
+                  ? "transition duration-500 ease-out motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.02] hover:shadow-[0_25px_70px_-20px_rgba(99,102,241,0.55)]"
+                  : ""
               }`}
             />
           </div>

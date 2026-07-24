@@ -15,6 +15,7 @@ export type SiteSettings = {
   heroImageShape: "square" | "circle" | "portrait";
   heroImagePosition: "left" | "right";
   heroImageRing: boolean;
+  heroImageHover: boolean;
   availableForWork: boolean;
   socials: { github: string; linkedin: string; email: string };
 };
@@ -50,6 +51,7 @@ export async function getSettings(): Promise<SiteSettings> {
     heroImagePosition:
       (row?.heroImagePosition as SiteSettings["heroImagePosition"]) || "right",
     heroImageRing: row?.heroImageRing ?? false,
+    heroImageHover: row?.heroImageHover ?? false,
     availableForWork: row?.availableForWork ?? true,
     socials: { github, linkedin, email: `mailto:${email}` },
   };

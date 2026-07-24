@@ -190,6 +190,7 @@ export async function saveSettings(formData: FormData) {
     heroImageShape: toStr(formData.get("heroImageShape")) || "square",
     heroImagePosition: toStr(formData.get("heroImagePosition")) || "right",
     heroImageRing: formData.get("heroImageRing") === "on",
+    heroImageHover: formData.get("heroImageHover") === "on",
     availableForWork: formData.get("availableForWork") === "on",
   };
 

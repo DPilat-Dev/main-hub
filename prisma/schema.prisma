@@ -86,6 +86,7 @@ model SiteSettings {
   heroImageShape    String  @default("square") // square | circle | portrait
   heroImagePosition String  @default("right") // left | right
   heroImageRing     Boolean @default(false)
+  heroImageHover    Boolean @default(false)
   availableForWork  Boolean @default(true)
   updatedAt         DateTime @updatedAt
 }

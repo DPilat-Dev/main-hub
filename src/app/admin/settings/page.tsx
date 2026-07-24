@@ -60,7 +60,7 @@ export default async function AdminSettingsPage() {
           <MediaPicker name="heroImage" defaultValue={s.heroImage} />
         </Field>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Image shape">
             <Select
               name="heroImageShape"
@@ -82,15 +82,19 @@ export default async function AdminSettingsPage() {
               ]}
             />
           </Field>
-          <Field label="Border ring">
-            <div className="pt-2.5">
-              <Toggle
-                name="heroImageRing"
-                label="Accent ring"
-                defaultChecked={s.heroImageRing}
-              />
-            </div>
-          </Field>
+        </div>
+
+        <div className="flex flex-wrap gap-x-8 gap-y-3">
+          <Toggle
+            name="heroImageRing"
+            label="Accent ring"
+            defaultChecked={s.heroImageRing}
+          />
+          <Toggle
+            name="heroImageHover"
+            label="Hover effect"
+            defaultChecked={s.heroImageHover}
+          />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
