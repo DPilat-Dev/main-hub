@@ -155,6 +155,7 @@ export async function HomelabStatus() {
             { Icon: LuCpu, label: "CPU", value: server.cpu },
             { Icon: LuCpu, label: "Cores", value: server.cores },
             { Icon: LuMemoryStick, label: "Memory", value: server.ram },
+            { Icon: LuMonitor, label: "GPU", value: server.gpu },
             { Icon: LuTerminal, label: "OS", value: server.os },
           ]}
         >

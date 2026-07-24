@@ -8,8 +8,9 @@ export const hardware = {
     cpu: "Intel Core i7-14700K",
     cores: "20 cores / 28 threads",
     ram: "94 GB",
+    gpu: "NVIDIA Quadro P2000",
     os: "Proxmox VE 8.4",
-    specLine: "i7-14700K · 20C/28T · 94 GB",
+    specLine: "i7-14700K · 94 GB · Quadro P2000",
   },
   workstation: {
     name: "Primary workstation",
