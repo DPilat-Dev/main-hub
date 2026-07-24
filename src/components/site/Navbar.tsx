@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { FiMenu, FiX, FiTerminal } from "react-icons/fi";
 import { site } from "@/lib/site";
 import { SocialLinks } from "./SocialLinks";
+import { CommandPalette } from "./CommandPalette";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -43,6 +44,7 @@ export function Navbar() {
             </Link>
           ))}
           <div className="mx-2 h-5 w-px bg-[var(--color-border)]" />
+          <CommandPalette />
           <SocialLinks />
         </div>
 

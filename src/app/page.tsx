@@ -12,6 +12,8 @@ import { SocialLinks } from "@/components/site/SocialLinks";
 import { Typewriter } from "@/components/site/Typewriter";
 import { ProjectCard } from "@/components/site/ProjectCard";
 import { PostCard } from "@/components/site/PostCard";
+import { HomelabStatus } from "@/components/site/HomelabStatus";
+import { GitHubSection } from "@/components/site/GitHubSection";
 
 export const revalidate = 60;
 
@@ -122,6 +124,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Homelab ──────────────────────────────────────── */}
+      <HomelabStatus />
+
       {/* ── Recent writing ───────────────────────────────── */}
       {posts.length > 0 && (
         <section className="mt-20">
@@ -146,6 +151,9 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── GitHub ───────────────────────────────────────── */}
+      <GitHubSection />
 
       {/* ── CTA ──────────────────────────────────────────── */}
       <section className="my-24">

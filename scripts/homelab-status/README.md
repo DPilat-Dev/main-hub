@@ -1,0 +1,85 @@
+# Homelab status collector
+
+A tiny, dependency-free Node service that reads your **Proxmox** API with a
+**read-only** token and serves a sanitized JSON for the website's Homelab
+section. Proxmox is never exposed to the internet — only the curated data in
+`collector.mjs` (`SERVICES` allowlist) is public.
+
+## 1. Run it on your LAN
+
+Copy `collector.mjs` to your server (it can live in the `docker` LXC, a small
+`status` LXC, or anywhere with Node 18+). Then:
+
+```bash
+PVE_HOST=192.168.1.24 \
+PVE_TOKEN='root@pam!claude-readonly=YOUR-SECRET' \
+LISTEN_PORT=8787 \
+node collector.mjs
+```
+
+Test locally:
+
+```bash
+curl http://localhost:8787 | jq
+```
+
+### Keep it running (systemd)
+
+`/etc/systemd/system/homelab-status.service`:
+
+```ini
+[Unit]
+Description=Homelab status collector
+After=network.target
+
+[Service]
+Environment=PVE_HOST=192.168.1.24
+Environment=PVE_TOKEN=root@pam!claude-readonly=YOUR-SECRET
+Environment=LISTEN_PORT=8787
+ExecStart=/usr/bin/node /opt/homelab-status/collector.mjs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+systemctl enable --now homelab-status
+```
+
+## 2. Expose it via Nginx Proxy Manager
+
+In NPM, add a **Proxy Host**:
+
+- **Domain:** `status.yourdomain.com`
+- **Forward Hostname/IP:** the collector's LAN IP
+- **Forward Port:** `8787`
+- **Block Common Exploits:** on
+- **SSL:** request a Let's Encrypt cert (or use your Cloudflare Tunnel)
+
+Since Cloudflared already runs in your homelab, you can instead route
+`status.yourdomain.com` through the tunnel to the collector — no ports opened.
+
+## 3. Point the website at it
+
+Set an env var on Vercel (Production + Preview):
+
+```
+HOMELAB_STATUS_URL = https://status.yourdomain.com
+```
+
+Optionally protect the endpoint: set `STATUS_TOKEN=some-secret` on the collector
+**and** `HOMELAB_STATUS_TOKEN=some-secret` on Vercel — the site sends it as a
+Bearer token.
+
+Redeploy (or wait for revalidation) and the Homelab section switches from the
+static card to **live** node uptime, CPU/RAM, and running services.
+
+## Security notes
+
+- The Proxmox token must be **read-only** (`PVEAuditor`). The collector only
+  ever issues GET requests.
+- Edit the `SERVICES` allowlist in `collector.mjs` to control exactly which
+  containers appear publicly. Anything not listed is hidden.
+- Rotate the Proxmox token any time from **Datacenter → Permissions → API
+  Tokens**.

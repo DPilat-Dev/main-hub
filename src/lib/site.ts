@@ -21,10 +21,12 @@ export const site = {
     linkedin: "https://www.linkedin.com/in/dpilat-dev/",
     email: "mailto:david.j.pilat@gmail.com",
   },
+  githubUser: "DPilat-Dev",
   nav: [
     { label: "Home", href: "/" },
     { label: "Resume", href: "/resume" },
     { label: "Projects", href: "/projects" },
+    { label: "Uses", href: "/uses" },
     { label: "Blog", href: "/blog" },
   ],
 } as const;
