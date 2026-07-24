@@ -204,28 +204,51 @@ export async function HomelabStatus() {
           role={nas.role}
           headerRight={
             <span className="rounded-full border border-[var(--color-border)] px-2 py-0.5 font-mono text-xs text-[var(--color-accent-soft)]">
-              ~{nas.totalTb} TB
+              ~{status?.nas?.totalTb ?? nas.totalTb} TB
             </span>
           }
           specs={[]}
         >
           <div className="space-y-2.5">
-            {nas.volumes.map((v) => (
-              <div
-                key={v.name}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-2.5"
-              >
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm font-medium">{v.name}</span>
-                  <span className="font-mono text-sm text-[var(--color-accent-soft)]">
-                    {v.size}
-                  </span>
+            {nas.volumes.map((v) => {
+              // Merge live capacity (SNMP) with static RAID details.
+              const liveVol = status?.nas?.volumes.find(
+                (lv) => lv.name === v.name,
+              );
+              return (
+                <div
+                  key={v.name}
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-2.5"
+                >
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-sm font-medium">{v.name}</span>
+                    <span className="font-mono text-xs text-[var(--color-muted)]">
+                      {liveVol
+                        ? `${liveVol.usedTb} / ${liveVol.totalTb} TB`
+                        : v.size}
+                    </span>
+                  </div>
+                  {liveVol && (
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--color-bg)]">
+                      <div
+                        className={`h-full rounded-full ${
+                          liveVol.pct >= 90
+                            ? "bg-red-400"
+                            : "bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)]"
+                        }`}
+                        style={{ width: `${Math.min(100, Math.max(2, liveVol.pct))}%` }}
+                      />
+                    </div>
+                  )}
+                  <div className="mt-1 flex items-center justify-between text-xs text-[var(--color-faint)]">
+                    <span>
+                      {v.type} · {v.drives}
+                    </span>
+                    {liveVol && <span>{liveVol.pct}% used</span>}
+                  </div>
                 </div>
-                <div className="mt-0.5 text-xs text-[var(--color-faint)]">
-                  {v.type} · {v.drives}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </SpecCard>
       </div>

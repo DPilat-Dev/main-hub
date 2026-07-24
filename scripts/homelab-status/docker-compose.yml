@@ -18,6 +18,9 @@ services:
       # Enable 24h CPU/memory sparklines + per-service uptime % from Prometheus
       # (uses pve-exporter data you already scrape).
       PROM_URL: "http://192.168.1.242:9090"
+      # Enable live Synology NAS volume capacity via SNMP (LAN-only).
+      SYNO_HOST: "192.168.1.3"
+      SYNO_COMMUNITY: "homelab-ro"
       # Optional: protect the endpoint with a shared secret (also set
       # HOMELAB_STATUS_TOKEN to the same value on Vercel).
       # STATUS_TOKEN: "${STATUS_TOKEN:-}"

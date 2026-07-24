@@ -27,6 +27,15 @@ export type HomelabStatus = {
   };
   services: HomelabService[];
   counts: { running: number; total: number };
+  nas?: {
+    totalTb: number;
+    volumes: {
+      name: string;
+      usedTb: number;
+      totalTb: number;
+      pct: number;
+    }[];
+  } | null;
 };
 
 export async function getHomelabStatus(): Promise<HomelabStatus | null> {

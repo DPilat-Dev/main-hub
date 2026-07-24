@@ -118,6 +118,17 @@ Set `PROM_URL` (e.g. `http://192.168.1.242:9090`) and the collector adds:
 This reuses the `prometheus-pve-exporter` data you already scrape — no extra
 Prometheus config needed.
 
+## Live Synology NAS capacity via SNMP (optional)
+
+1. On DSM: **Control Panel → Terminal & SNMP → SNMP** → enable **SNMPv2c** and
+   set a read-only **Community** string. Keep it LAN-only.
+2. Set `SYNO_HOST` (NAS IP) and `SYNO_COMMUNITY` — already wired in
+   `docker-compose.yml`.
+
+The collector reads `hrStorageTable` and reports used/total per `/volumeN`. The
+Docker image installs the `net-snmp` dependency automatically; for the plain
+Node path, run `npm install` in this folder first.
+
 ## Security notes
 
 - The Proxmox token must be **read-only** (`PVEAuditor`). The collector only

@@ -1,0 +1,14 @@
+{
+  "name": "homelab-status-collector",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Serves sanitized Proxmox + Blackbox + Synology status as JSON",
+  "main": "collector.mjs",
+  "scripts": {
+    "start": "node collector.mjs"
+  },
+  "dependencies": {
+    "net-snmp": "^3.11.2"
+  }
+}

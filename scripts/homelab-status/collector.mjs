@@ -23,6 +23,8 @@ const LISTEN_PORT = Number(process.env.LISTEN_PORT ?? 8787);
 const STATUS_TOKEN = process.env.STATUS_TOKEN ?? ""; // optional bearer to protect the endpoint
 const BLACKBOX_URL = process.env.BLACKBOX_URL ?? ""; // e.g. http://192.168.1.66:9115
 const PROM_URL = process.env.PROM_URL ?? ""; // e.g. http://192.168.1.242:9090 — enables 24h history
+const SYNO_HOST = process.env.SYNO_HOST ?? ""; // Synology NAS IP — enables live volume capacity via SNMP
+const SYNO_COMMUNITY = process.env.SYNO_COMMUNITY ?? "public";
 
 // ── Blackbox probe targets ─────────────────────────────────────────
 // The real URLs to check. Edit freely — only these are exposed publicly.
@@ -134,6 +136,71 @@ async function getPromHistory(nodeName) {
   }
 }
 
+// ── Synology NAS capacity via SNMP (optional) ──────────────────────
+// Reads HOST-RESOURCES-MIB hrStorageTable and extracts /volumeN usage.
+async function getNasStorage() {
+  if (!SYNO_HOST) return null;
+  let snmp;
+  try {
+    snmp = (await import("net-snmp")).default;
+  } catch {
+    return null; // net-snmp not installed
+  }
+  return new Promise((resolve) => {
+    const session = snmp.createSession(SYNO_HOST, SYNO_COMMUNITY, {
+      version: snmp.Version2c,
+      timeout: 8000,
+    });
+    const rows = {};
+    const cols = { 3: "descr", 4: "units", 5: "size", 6: "used" };
+    const TiB = 1024 ** 4;
+    session.subtree(
+      "1.3.6.1.2.1.25.2.3.1",
+      20,
+      (varbinds) => {
+        for (const vb of varbinds) {
+          if (snmp.isVarbindError(vb)) continue;
+          const p = vb.oid.split(".");
+          const idx = p[p.length - 1];
+          const key = cols[p[p.length - 2]];
+          if (!key) continue;
+          rows[idx] ??= {};
+          rows[idx][key] =
+            key === "descr" ? vb.value.toString() : Number(vb.value);
+        }
+      },
+      (error) => {
+        try {
+          session.close();
+        } catch {
+          /* ignore */
+        }
+        if (error) return resolve(null);
+        const volumes = [];
+        for (const idx of Object.keys(rows)) {
+          const r = rows[idx];
+          const m = r.descr && r.descr.match(/^\/volume(\d+)$/);
+          if (!m || !r.size) continue;
+          const totalTb = (r.size * r.units) / TiB;
+          const usedTb = (r.used * r.units) / TiB;
+          volumes.push({
+            name: `Volume ${m[1]}`,
+            n: Number(m[1]),
+            usedTb: Number(usedTb.toFixed(2)),
+            totalTb: Number(totalTb.toFixed(2)),
+            pct: Math.round((usedTb / totalTb) * 100),
+          });
+        }
+        volumes.sort((a, b) => a.n - b.n);
+        const totalTb = Number(
+          volumes.reduce((s, v) => s + v.totalTb, 0).toFixed(1),
+        );
+        resolve({ totalTb, volumes });
+      },
+    );
+  });
+}
+
 // Ask Blackbox for a URL's health (latency + SSL expiry). Best-effort.
 async function probeUrl(url) {
   try {
@@ -160,7 +227,10 @@ async function buildStatus() {
   const resources = await pveGet("/cluster/resources");
   const node = resources.find((r) => r.type === "node");
   const guests = resources.filter((r) => r.type === "lxc" || r.type === "qemu");
-  const history = await getPromHistory(node?.node ?? "");
+  const [history, nas] = await Promise.all([
+    getPromHistory(node?.node ?? ""),
+    getNasStorage(),
+  ]);
 
   // Every allowlisted container, with its Proxmox running status.
   const services = await Promise.all(
@@ -207,6 +277,7 @@ async function buildStatus() {
     },
     services,
     counts: { running, total: services.length },
+    nas,
   };
 }
 
