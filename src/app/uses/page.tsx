@@ -12,6 +12,9 @@ import {
 } from "react-icons/lu";
 import { hardware } from "@/lib/hardware";
 import { selfHosted, stack, type Group } from "@/lib/uses";
+import { getHomelabStatus } from "@/lib/homelab";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Uses",
@@ -27,12 +30,14 @@ function SpecCard({
   role,
   badge,
   specs,
+  children,
 }: {
   Icon: IconType;
   name: string;
   role: string;
   badge?: string;
   specs: Spec[];
+  children?: React.ReactNode;
 }) {
   return (
     <div className="card card-hover p-6">
@@ -53,22 +58,26 @@ function SpecCard({
         )}
       </div>
 
-      <dl className="divide-y divide-[var(--color-border)]">
-        {specs.map((s) => (
-          <div
-            key={s.label}
-            className="flex items-center justify-between gap-3 py-2.5 text-sm"
-          >
-            <dt className="inline-flex items-center gap-2 text-[var(--color-muted)]">
-              <s.Icon className="h-4 w-4 text-[var(--color-faint)]" />
-              {s.label}
-            </dt>
-            <dd className="text-right font-medium text-[var(--color-foreground)]">
-              {s.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {specs.length > 0 && (
+        <dl className="divide-y divide-[var(--color-border)]">
+          {specs.map((s) => (
+            <div
+              key={s.label}
+              className="flex items-center justify-between gap-3 py-2.5 text-sm"
+            >
+              <dt className="inline-flex items-center gap-2 text-[var(--color-muted)]">
+                <s.Icon className="h-4 w-4 text-[var(--color-faint)]" />
+                {s.label}
+              </dt>
+              <dd className="text-right font-medium text-[var(--color-foreground)]">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {children}
     </div>
   );
 }
@@ -108,8 +117,9 @@ function ChipSection({
   );
 }
 
-export default function UsesPage() {
+export default async function UsesPage() {
   const { server, workstation, streamingPc, nas } = hardware;
+  const status = await getHomelabStatus();
 
   return (
     <div className="container-page max-w-5xl py-14">
@@ -171,13 +181,52 @@ export default function UsesPage() {
               Icon={LuHardDrive}
               name={nas.name}
               role={nas.role}
-              badge={`~${nas.totalTb} TB`}
-              specs={nas.volumes.map((v) => ({
-                Icon: LuGauge,
-                label: v.name,
-                value: `${v.size} · ${v.type}`,
-              }))}
-            />
+              badge={`~${status?.nas?.totalTb ?? nas.totalTb} TB`}
+              specs={[]}
+            >
+              <div className="space-y-3">
+                {nas.volumes.map((v) => {
+                  const liveVol = status?.nas?.volumes.find(
+                    (lv) => lv.name === v.name,
+                  );
+                  return (
+                    <div key={v.name}>
+                      <div className="flex items-baseline justify-between text-sm">
+                        <span className="inline-flex items-center gap-2 font-medium">
+                          <LuGauge className="h-4 w-4 text-[var(--color-faint)]" />
+                          {v.name}
+                        </span>
+                        <span className="font-mono text-xs text-[var(--color-muted)]">
+                          {liveVol
+                            ? `${liveVol.usedTb} / ${liveVol.totalTb} TB`
+                            : v.size}
+                        </span>
+                      </div>
+                      {liveVol && (
+                        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--color-surface-2)]">
+                          <div
+                            className={`h-full rounded-full ${
+                              liveVol.pct >= 90
+                                ? "bg-red-400"
+                                : "bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-2)]"
+                            }`}
+                            style={{
+                              width: `${Math.min(100, Math.max(2, liveVol.pct))}%`,
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="mt-1 flex items-center justify-between text-xs text-[var(--color-faint)]">
+                        <span>
+                          {v.type} · {v.drives}
+                        </span>
+                        {liveVol && <span>{liveVol.pct}% used</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </SpecCard>
           </div>
         </section>
 
