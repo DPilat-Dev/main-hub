@@ -14,6 +14,7 @@ import {
   type HomelabService,
 } from "@/lib/homelab";
 import { hardware } from "@/lib/hardware";
+import { Sparkline } from "./Sparkline";
 
 // Curated services shown in the static fallback (before live data is wired up).
 const fallbackServices: HomelabService[] = [
@@ -174,6 +175,14 @@ export async function HomelabStatus() {
                   value={(status!.node.memUsed / status!.node.memTotal) * 100}
                   display={`${status!.node.memUsed}/${status!.node.memTotal} GB`}
                 />
+                {status!.node.cpuHistory && status!.node.cpuHistory.length > 1 && (
+                  <div>
+                    <div className="mb-1 text-xs text-[var(--color-faint)]">
+                      CPU · last 24h
+                    </div>
+                    <Sparkline values={status!.node.cpuHistory} />
+                  </div>
+                )}
                 <div className="text-xs text-[var(--color-faint)]">
                   {status!.counts.running}/{status!.counts.total} services running
                 </div>
@@ -239,9 +248,9 @@ export async function HomelabStatus() {
       <div className="card mt-4 p-5">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-semibold">Services</h3>
-          {live && status!.source === "blackbox" && (
+          {live && (
             <span className="text-xs text-[var(--color-faint)]">
-              Live uptime &amp; latency via Blackbox
+              Live status · 24h uptime · response time
             </span>
           )}
         </div>
@@ -250,6 +259,7 @@ export async function HomelabStatus() {
             const up = s.status === "running";
             const down = s.status === "down";
             const ms = s.responseMs ?? null;
+            const uptime = s.uptimePct ?? null;
             return (
               <div
                 key={s.name}
@@ -269,13 +279,24 @@ export async function HomelabStatus() {
                     {s.name}
                   </span>
                 </span>
-                {ms != null ? (
-                  <span className="shrink-0 font-mono text-xs text-[var(--color-faint)]">
-                    {ms}ms
-                  </span>
-                ) : down ? (
-                  <span className="shrink-0 text-xs text-red-400">down</span>
-                ) : null}
+                <span className="flex shrink-0 items-center gap-2 font-mono text-xs text-[var(--color-faint)]">
+                  {ms != null && <span>{ms}ms</span>}
+                  {uptime != null ? (
+                    <span
+                      className={
+                        uptime >= 99
+                          ? "text-emerald-400/80"
+                          : uptime >= 90
+                            ? "text-[var(--color-muted)]"
+                            : "text-red-400"
+                      }
+                    >
+                      {uptime}%
+                    </span>
+                  ) : down ? (
+                    <span className="text-red-400">down</span>
+                  ) : null}
+                </span>
               </div>
             );
           })}

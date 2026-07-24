@@ -9,6 +9,7 @@ export type HomelabService = {
   responseMs?: number | null;
   httpStatus?: number | null;
   sslDaysLeft?: number | null;
+  uptimePct?: number | null; // 24h availability
 };
 
 export type HomelabStatus = {
@@ -21,6 +22,8 @@ export type HomelabStatus = {
     cpu: number; // 0..1
     memUsed: number; // GiB
     memTotal: number; // GiB
+    cpuHistory?: number[]; // 24h, percent
+    memHistory?: number[]; // 24h, percent
   };
   services: HomelabService[];
   counts: { running: number; total: number };

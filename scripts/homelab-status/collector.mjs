@@ -22,6 +22,7 @@ const PVE_TOKEN = process.env.PVE_TOKEN ?? ""; // USER@REALM!ID=SECRET
 const LISTEN_PORT = Number(process.env.LISTEN_PORT ?? 8787);
 const STATUS_TOKEN = process.env.STATUS_TOKEN ?? ""; // optional bearer to protect the endpoint
 const BLACKBOX_URL = process.env.BLACKBOX_URL ?? ""; // e.g. http://192.168.1.66:9115
+const PROM_URL = process.env.PROM_URL ?? ""; // e.g. http://192.168.1.242:9090 — enables 24h history
 
 // ── Blackbox probe targets ─────────────────────────────────────────
 // The real URLs to check. Edit freely — only these are exposed publicly.
@@ -83,6 +84,56 @@ function metric(text, name) {
   return m ? Number(m[1]) : null;
 }
 
+// ── Prometheus (optional history) ──────────────────────────────────
+async function promInstant(query) {
+  const body = await get(
+    `${PROM_URL}/api/v1/query?query=${encodeURIComponent(query)}`,
+  );
+  return JSON.parse(body).data.result;
+}
+
+async function promRange(query, seconds, step) {
+  const end = Math.floor(Date.now() / 1000);
+  const start = end - seconds;
+  const body = await get(
+    `${PROM_URL}/api/v1/query_range?query=${encodeURIComponent(query)}&start=${start}&end=${end}&step=${step}`,
+  );
+  const result = JSON.parse(body).data.result;
+  return result[0] ? result[0].values.map((v) => Number(v[1])) : [];
+}
+
+// Returns { cpuHistory, memHistory, uptime: { [vmid]: pct } } or null.
+async function getPromHistory(nodeName) {
+  if (!PROM_URL) return null;
+  try {
+    const [cpu, mem, uptimeRows] = await Promise.all([
+      promRange(
+        `pve_cpu_usage_ratio{id="node/${nodeName}"}*100`,
+        86400,
+        3600,
+      ),
+      promRange(
+        `100*pve_memory_usage_bytes{id="node/${nodeName}"}/pve_memory_size_bytes{id="node/${nodeName}"}`,
+        86400,
+        3600,
+      ),
+      promInstant(`avg_over_time(pve_up{id=~"lxc/.*"}[24h])*100`),
+    ]);
+    const uptime = {};
+    for (const row of uptimeRows) {
+      const m = String(row.metric.id).match(/lxc\/(\d+)/);
+      if (m) uptime[Number(m[1])] = Math.round(Number(row.value[1]));
+    }
+    return {
+      cpuHistory: cpu.map((n) => Math.round(n)),
+      memHistory: mem.map((n) => Math.round(n)),
+      uptime,
+    };
+  } catch {
+    return null;
+  }
+}
+
 // Ask Blackbox for a URL's health (latency + SSL expiry). Best-effort.
 async function probeUrl(url) {
   try {
@@ -109,6 +160,7 @@ async function buildStatus() {
   const resources = await pveGet("/cluster/resources");
   const node = resources.find((r) => r.type === "node");
   const guests = resources.filter((r) => r.type === "lxc" || r.type === "qemu");
+  const history = await getPromHistory(node?.node ?? "");
 
   // Every allowlisted container, with its Proxmox running status.
   const services = await Promise.all(
@@ -117,6 +169,9 @@ async function buildStatus() {
       .map(async (g) => {
         const cfg = SERVICES[g.vmid];
         const svc = { name: cfg.name, category: cfg.category, status: g.status };
+        if (history?.uptime[g.vmid] != null) {
+          svc.uptimePct = history.uptime[g.vmid];
+        }
         // Enrich with live response time where a public URL is configured.
         if (cfg.url && BLACKBOX_URL && g.status === "running") {
           const p = await probeUrl(cfg.url);
@@ -147,6 +202,8 @@ async function buildStatus() {
       cpu: node?.cpu ?? 0,
       memUsed: Math.round((node?.mem ?? 0) / 1024 ** 3),
       memTotal: Math.round((node?.maxmem ?? 1) / 1024 ** 3),
+      cpuHistory: history?.cpuHistory ?? [],
+      memHistory: history?.memHistory ?? [],
     },
     services,
     counts: { running, total: services.length },

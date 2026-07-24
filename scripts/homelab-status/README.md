@@ -107,6 +107,17 @@ The collector calls Blackbox's `/probe` endpoint directly, so **no Prometheus
 scrape config is required**. Without `BLACKBOX_URL` it falls back to the Proxmox
 `SERVICES` allowlist.
 
+## 24h history via Prometheus (optional)
+
+Set `PROM_URL` (e.g. `http://192.168.1.242:9090`) and the collector adds:
+
+- **Node CPU + memory sparklines** over the last 24h (`pve_cpu_usage_ratio`,
+  `pve_memory_usage_bytes`).
+- **Per-service 24h uptime %** (`avg_over_time(pve_up[24h])`).
+
+This reuses the `prometheus-pve-exporter` data you already scrape — no extra
+Prometheus config needed.
+
 ## Security notes
 
 - The Proxmox token must be **read-only** (`PVEAuditor`). The collector only
