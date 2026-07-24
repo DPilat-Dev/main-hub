@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FiArrowLeft, FiExternalLink, FiGithub } from "react-icons/fi";
 import { prisma } from "@/lib/prisma";
+import { getProjectPreview } from "@/lib/preview";
+import { ProjectPreview } from "@/components/site/ProjectPreview";
 
 export const revalidate = 60;
 
@@ -19,6 +21,8 @@ export default async function ProjectPage({ params }: Params) {
   const { slug } = await params;
   const project = await prisma.project.findUnique({ where: { slug } });
   if (!project) notFound();
+
+  const preview = getProjectPreview(project);
 
   return (
     <article className="container-page max-w-3xl py-14">
@@ -70,6 +74,24 @@ export default async function ProjectPage({ params }: Params) {
           </div>
         )}
       </header>
+
+      {preview && (
+        <div className="group mt-8 overflow-hidden rounded-xl border border-[var(--color-border)]">
+          {project.liveUrl ? (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Open ${project.title} in a new tab`}
+              className="block"
+            >
+              <ProjectPreview src={preview} title={project.title} />
+            </a>
+          ) : (
+            <ProjectPreview src={preview} title={project.title} />
+          )}
+        </div>
+      )}
 
       {project.description && (
         <div

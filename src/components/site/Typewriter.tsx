@@ -65,10 +65,11 @@ export function Typewriter({
   }, [phrases, typingSpeed, deletingSpeed, holdDelay]);
 
   return (
-    // Grid stacks every phrase in the same cell so the box always reserves the
-    // height of the tallest one — the live text overlays it with zero layout
-    // shift, so buttons below never move.
-    <span className="grid grid-cols-1">
+    // Invisible sizers (in normal flow) reserve the height of the TALLEST
+    // phrase. The live text is an absolute overlay, so nothing it does — not
+    // even the cursor nudging a word onto a new line — can change the box
+    // height. Result: zero layout shift for the buttons below.
+    <span className="relative grid grid-cols-1">
       {phrases.map((phrase, i) => (
         <span
           key={i}
@@ -78,7 +79,9 @@ export function Typewriter({
           {phrase}
         </span>
       ))}
-      <span className={`[grid-area:1/1] ${className}`}>
+      <span
+        className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
+      >
         {text}
         <span
           aria-hidden="true"
