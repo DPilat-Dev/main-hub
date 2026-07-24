@@ -15,13 +15,13 @@ export type UsesCategory = {
 
 export const uses: UsesCategory[] = [
   {
-    label: "Homelab & Self-hosting",
+    label: "Homelab — Server (zeus)",
     icon: "server",
     items: [
       {
-        name: "Proxmox VE",
+        name: "Proxmox VE 8.4",
         description:
-          "Hypervisor running my homelab — VMs and LXC containers for the apps and services I self-host.",
+          "Hypervisor running my homelab on an Intel Core i7-14700K (20 cores / 28 threads) with 94 GB RAM — VMs and LXC containers for everything I self-host.",
         url: "https://www.proxmox.com/",
       },
       {
@@ -30,25 +30,60 @@ export const uses: UsesCategory[] = [
           "How I package and run most self-hosted services, with reproducible setups.",
       },
       {
-        name: "Reverse proxy + subdomains",
+        name: "Nginx Proxy Manager + Cloudflare Tunnel",
         description:
-          "A reverse proxy fronts my services and maps them to subdomains behind HTTPS.",
+          "Fronts my services and maps them to subdomains over HTTPS — no ports exposed.",
+      },
+      {
+        name: "Prometheus + Grafana + Blackbox",
+        description:
+          "Monitoring stack for metrics, dashboards, and real uptime/latency probes (which power the live status on my homepage).",
+      },
+      {
+        name: "Media & apps",
+        description:
+          "Jellyfin, Plex, Emby, Pi-hole, Homarr, AMP game servers, and more — all in isolated LXC containers.",
       },
     ],
   },
   {
-    label: "Workstation & Hardware",
+    label: "Storage — Synology NAS",
+    icon: "server",
+    items: [
+      {
+        name: "Volume 1 — 27.93 TB",
+        description: "RAID 5 array of 8 TB drives.",
+      },
+      {
+        name: "Volume 3 — 52.36 TB",
+        description:
+          "SHR with 1-drive fault tolerance, 4 × 20 TB drives.",
+      },
+      {
+        name: "Volume 2 — 1.8 TB",
+        description: "SHR, a single 2 TB drive.",
+      },
+    ],
+  },
+  {
+    label: "Workstation",
     icon: "cpu",
     items: [
       {
-        name: "Primary dev machine",
-        description:
-          "My daily driver for .NET and web development. (Update with your exact specs.)",
+        name: "AMD Ryzen 9 5900X",
+        description: "12 cores / 24 threads — my daily driver for development.",
       },
       {
-        name: "Displays & peripherals",
-        description:
-          "Multi-monitor setup with a mechanical keyboard. (Swap in your real gear.)",
+        name: "AMD Radeon RX 9070 XT",
+        description: "Handles graphics, encoding, and the occasional game.",
+      },
+      {
+        name: "64 GB RAM · 1 TB NVMe",
+        description: "Plenty of headroom for containers, VMs, and builds.",
+      },
+      {
+        name: "Arch Linux",
+        description: "A fast, minimal, rolling-release setup I control end to end.",
       },
     ],
   },

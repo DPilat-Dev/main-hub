@@ -1,9 +1,10 @@
-import { FiServer, FiActivity, FiCircle } from "react-icons/fi";
+import { FiServer, FiActivity, FiCircle, FiHardDrive } from "react-icons/fi";
 import {
   getHomelabStatus,
   formatUptime,
   type HomelabService,
 } from "@/lib/homelab";
+import { hardware } from "@/lib/hardware";
 
 // Curated services shown in the static fallback (before live data is wired up).
 const fallbackServices: HomelabService[] = [
@@ -69,6 +70,10 @@ export async function HomelabStatus() {
               {live ? status!.node.status : "online"}
             </span>
           </div>
+
+          <p className="mt-2 text-xs text-[var(--color-faint)]">
+            {hardware.server.cpu} · {hardware.server.cores}
+          </p>
 
           {live ? (
             <div className="mt-4 space-y-3">
@@ -140,6 +145,37 @@ export async function HomelabStatus() {
               Live uptime &amp; response times via my Prometheus Blackbox exporter.
             </p>
           )}
+        </div>
+      </div>
+
+      {/* Storage (Synology NAS) */}
+      <div className="card mt-4 p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="inline-flex items-center gap-2 font-semibold">
+            <FiHardDrive className="h-4 w-4 text-[var(--color-accent-soft)]" />
+            {hardware.nas.name}
+          </span>
+          <span className="text-sm text-[var(--color-muted)]">
+            ~{hardware.nas.totalTb} TB usable
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {hardware.nas.volumes.map((v) => (
+            <div
+              key={v.name}
+              className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3"
+            >
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-medium">{v.name}</span>
+                <span className="font-mono text-sm text-[var(--color-accent-soft)]">
+                  {v.size}
+                </span>
+              </div>
+              <div className="mt-1 text-xs text-[var(--color-faint)]">
+                {v.type} · {v.drives}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
