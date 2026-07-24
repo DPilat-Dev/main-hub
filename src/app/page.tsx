@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { site } from "@/lib/site";
 import { resume } from "@/lib/resume";
 import { SocialLinks } from "@/components/site/SocialLinks";
+import { Typewriter } from "@/components/site/Typewriter";
 import { ProjectCard } from "@/components/site/ProjectCard";
 import { PostCard } from "@/components/site/PostCard";
 
@@ -43,16 +44,16 @@ export default async function HomePage() {
           Available for new opportunities
         </span>
 
-        <h1 className="max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
+        <h1 className="max-w-3xl text-4xl font-bold leading-[1.15] tracking-tight sm:text-6xl">
           Hi, I&apos;m {resume.name.split(" ")[0]} — I build{" "}
-          <span className="accent-gradient-text">reliable software</span> that
-          protects revenue.
+          <Typewriter
+            phrases={site.heroPhrases}
+            className="accent-gradient-text"
+          />
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]">
-          {site.tagline} {resume.title} focused on resilient deployments,
-          structured logging, and faster feature delivery across .NET and the
-          modern web.
+          {site.intro}
         </p>
 
         <div className="flex flex-wrap items-center gap-3">

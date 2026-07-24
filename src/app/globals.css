@@ -144,6 +144,25 @@ body::before {
   }
 }
 
+/* ── Hero typewriter cursor ───────────────────────────────── */
+.typewriter-cursor {
+  height: 1em;
+  background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent-2));
+  border-radius: 1px;
+  animation: typewriter-blink 1s steps(2, start) infinite;
+  vertical-align: baseline;
+}
+@keyframes typewriter-blink {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-cursor {
+    animation: none;
+  }
+}
+
 /* ── Rich text (blog / project bodies) ────────────────────── */
 .prose {
   --tw-prose-body: var(--color-muted);
