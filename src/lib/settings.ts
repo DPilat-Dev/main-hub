@@ -11,6 +11,7 @@ export type SiteSettings = {
   location: string;
   githubUrl: string;
   linkedinUrl: string;
+  heroImage: string;
   availableForWork: boolean;
   socials: { github: string; linkedin: string; email: string };
 };
@@ -40,6 +41,7 @@ export async function getSettings(): Promise<SiteSettings> {
     location: row?.location || site.location,
     githubUrl: github,
     linkedinUrl: linkedin,
+    heroImage: row?.heroImage || "",
     availableForWork: row?.availableForWork ?? true,
     socials: { github, linkedin, email: `mailto:${email}` },
   };

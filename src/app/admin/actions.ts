@@ -186,6 +186,7 @@ export async function saveSettings(formData: FormData) {
     location: toStr(formData.get("location")),
     githubUrl: toStr(formData.get("githubUrl")),
     linkedinUrl: toStr(formData.get("linkedinUrl")),
+    heroImage: toStr(formData.get("heroImage")),
     availableForWork: formData.get("availableForWork") === "on",
   };
 

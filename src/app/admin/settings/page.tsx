@@ -1,6 +1,7 @@
 import { getSettings } from "@/lib/settings";
 import { saveSettings } from "@/app/admin/actions";
 import { Field, Input, Textarea, Toggle, SubmitButton } from "@/components/admin/fields";
+import { MediaPicker } from "@/components/admin/MediaPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,13 @@ export default async function AdminSettingsPage() {
             defaultValue={s.heroPhrases.join("\n")}
             rows={4}
           />
+        </Field>
+
+        <Field
+          label="Hero image"
+          hint="Optional — shows beside the hero. Leave empty to keep the current full-width layout."
+        >
+          <MediaPicker name="heroImage" defaultValue={s.heroImage} />
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">

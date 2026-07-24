@@ -82,6 +82,7 @@ model SiteSettings {
   location         String   @default("")
   githubUrl        String   @default("")
   linkedinUrl      String   @default("")
+  heroImage        String   @default("")
   availableForWork Boolean  @default(true)
   updatedAt        DateTime @updatedAt
 }

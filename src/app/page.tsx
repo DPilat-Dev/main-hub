@@ -49,39 +49,59 @@ export default async function HomePage() {
   return (
     <div className="container-page">
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="flex flex-col items-start gap-6 pt-16 pb-14 sm:pt-24">
-        {settings.availableForWork && (
-          <span className="chip">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            Available for new opportunities
-          </span>
+      <section
+        className={
+          settings.heroImage
+            ? "grid items-center gap-10 pt-16 pb-14 sm:pt-24 lg:grid-cols-[1.4fr_1fr]"
+            : "pt-16 pb-14 sm:pt-24"
+        }
+      >
+        <div className="flex flex-col items-start gap-6">
+          {settings.availableForWork && (
+            <span className="chip">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              Available for new opportunities
+            </span>
+          )}
+
+          <h1 className="max-w-3xl text-4xl font-bold leading-[1.15] tracking-tight sm:text-6xl">
+            Hi, I&apos;m {settings.name.split(" ")[0]} — I build{" "}
+            <Typewriter
+              phrases={settings.heroPhrases}
+              className="accent-gradient-text"
+            />
+          </h1>
+
+          <p className="max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]">
+            {settings.intro}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/resume" className="btn btn-primary">
+              <FiFileText className="h-4 w-4" /> View résumé
+            </Link>
+            <Link href="/projects" className="btn btn-ghost">
+              See projects <FiArrowRight className="h-4 w-4" />
+            </Link>
+            <SocialLinks className="ml-1" socials={settings.socials} />
+          </div>
+
+          <div className="flex items-center gap-1.5 text-sm text-[var(--color-faint)]">
+            <FiMapPin className="h-4 w-4" /> {settings.location}
+          </div>
+        </div>
+
+        {settings.heroImage && (
+          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+            <div className="pointer-events-none absolute -inset-6 rounded-full bg-gradient-to-br from-[var(--color-accent)]/25 to-[var(--color-accent-2)]/15 blur-3xl" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={settings.heroImage}
+              alt={settings.name}
+              className="relative aspect-square w-full rounded-2xl border border-[var(--color-border)] object-cover shadow-2xl"
+            />
+          </div>
         )}
-
-        <h1 className="max-w-3xl text-4xl font-bold leading-[1.15] tracking-tight sm:text-6xl">
-          Hi, I&apos;m {settings.name.split(" ")[0]} — I build{" "}
-          <Typewriter
-            phrases={settings.heroPhrases}
-            className="accent-gradient-text"
-          />
-        </h1>
-
-        <p className="max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]">
-          {settings.intro}
-        </p>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href="/resume" className="btn btn-primary">
-            <FiFileText className="h-4 w-4" /> View résumé
-          </Link>
-          <Link href="/projects" className="btn btn-ghost">
-            See projects <FiArrowRight className="h-4 w-4" />
-          </Link>
-          <SocialLinks className="ml-1" socials={settings.socials} />
-        </div>
-
-        <div className="flex items-center gap-1.5 text-sm text-[var(--color-faint)]">
-          <FiMapPin className="h-4 w-4" /> {settings.location}
-        </div>
       </section>
 
       {/* ── Stats ────────────────────────────────────────── */}
