@@ -23,6 +23,17 @@ export const hardware = {
     os: "Arch Linux",
     specLine: "Ryzen 9 5900X · 64 GB · RX 9070 XT",
   },
+  streamingPc: {
+    name: "Streaming rig",
+    role: "Game streaming · Sunshine/Moonlight",
+    cpu: "AMD Ryzen 7 5700X",
+    cores: "8 cores / 16 threads",
+    ram: "64 GB",
+    gpu: "NVIDIA GeForce RTX 3070 Ti (8 GB)",
+    storage: "2 TB",
+    os: "Windows 11",
+    specLine: "Ryzen 7 5700X · RTX 3070 Ti · 64 GB",
+  },
   nas: {
     name: "Synology NAS",
     role: "Network storage",

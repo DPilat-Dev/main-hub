@@ -125,7 +125,7 @@ export async function HomelabStatus() {
   const live = !!status;
   const services = status?.services ?? fallbackServices;
 
-  const { server, workstation, nas } = hardware;
+  const { server, nas } = hardware;
 
   return (
     <section className="mt-20">
@@ -142,7 +142,7 @@ export async function HomelabStatus() {
       </div>
 
       {/* Hardware spec cards */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* Server (live) */}
         <SpecCard
           Icon={LuServer}
@@ -196,21 +196,6 @@ export async function HomelabStatus() {
             )}
           </div>
         </SpecCard>
-
-        {/* Workstation */}
-        <SpecCard
-          Icon={LuMonitor}
-          name={workstation.name}
-          role={workstation.role}
-          specs={[
-            { Icon: LuCpu, label: "CPU", value: workstation.cpu },
-            { Icon: LuCpu, label: "Cores", value: workstation.cores },
-            { Icon: LuMemoryStick, label: "Memory", value: workstation.ram },
-            { Icon: LuMonitor, label: "GPU", value: workstation.gpu },
-            { Icon: LuHardDrive, label: "Storage", value: workstation.storage },
-            { Icon: LuTerminal, label: "OS", value: workstation.os },
-          ]}
-        />
 
         {/* NAS */}
         <SpecCard

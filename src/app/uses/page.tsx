@@ -109,7 +109,7 @@ function ChipSection({
 }
 
 export default function UsesPage() {
-  const { server, workstation, nas } = hardware;
+  const { server, workstation, streamingPc, nas } = hardware;
 
   return (
     <div className="container-page max-w-5xl py-14">
@@ -128,7 +128,7 @@ export default function UsesPage() {
             <FiServer className="h-5 w-5 text-[var(--color-accent-soft)]" />
             Hardware
           </h2>
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <SpecCard
               Icon={LuServer}
               name={server.name}
@@ -152,6 +152,19 @@ export default function UsesPage() {
                 { Icon: LuMonitor, label: "GPU", value: workstation.gpu },
                 { Icon: LuHardDrive, label: "Storage", value: workstation.storage },
                 { Icon: LuTerminal, label: "OS", value: workstation.os },
+              ]}
+            />
+            <SpecCard
+              Icon={LuMonitor}
+              name={streamingPc.name}
+              role={streamingPc.role}
+              specs={[
+                { Icon: LuCpu, label: "CPU", value: streamingPc.cpu },
+                { Icon: LuCpu, label: "Cores", value: streamingPc.cores },
+                { Icon: LuMemoryStick, label: "Memory", value: streamingPc.ram },
+                { Icon: LuMonitor, label: "GPU", value: streamingPc.gpu },
+                { Icon: LuHardDrive, label: "Storage", value: streamingPc.storage },
+                { Icon: LuTerminal, label: "OS", value: streamingPc.os },
               ]}
             />
             <SpecCard
