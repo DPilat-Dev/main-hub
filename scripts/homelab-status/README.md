@@ -5,22 +5,39 @@ A tiny, dependency-free Node service that reads your **Proxmox** API with a
 section. Proxmox is never exposed to the internet — only the curated data in
 `collector.mjs` (`SERVICES` allowlist) is public.
 
+You only need the files in **this folder** — not the whole website repo.
+
 ## 1. Run it on your LAN
 
-Copy `collector.mjs` to your server (it can live in the `docker` LXC, a small
-`status` LXC, or anywhere with Node 18+). Then:
+### Option A — Docker (recommended; use your existing `docker` LXC)
+
+Get this folder onto the server (either clone the repo and `cd` in, or copy the
+four files: `collector.mjs`, `Dockerfile`, `docker-compose.yml`, `README.md`):
+
+```bash
+git clone https://github.com/DPilat-Dev/main-hub.git
+cd main-hub/scripts/homelab-status
+
+# Put your read-only Proxmox token in a .env file (gitignored):
+echo "PVE_TOKEN=root@pam!claude-readonly=YOUR-SECRET" > .env
+
+docker compose up -d --build
+curl http://localhost:8787 | jq          # test
+```
+
+Edit `PVE_HOST` in `docker-compose.yml` if your Proxmox IP differs.
+
+### Option B — plain Node (systemd)
+
+Copy just `collector.mjs` to the server (Node 18+):
 
 ```bash
 PVE_HOST=192.168.1.24 \
 PVE_TOKEN='root@pam!claude-readonly=YOUR-SECRET' \
 LISTEN_PORT=8787 \
 node collector.mjs
-```
 
-Test locally:
-
-```bash
-curl http://localhost:8787 | jq
+curl http://localhost:8787 | jq          # test
 ```
 
 ### Keep it running (systemd)

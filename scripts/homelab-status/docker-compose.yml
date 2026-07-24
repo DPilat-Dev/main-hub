@@ -1,0 +1,17 @@
+services:
+  homelab-status:
+    build: .
+    container_name: homelab-status
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      PVE_HOST: "192.168.1.24"
+      PVE_PORT: "8006"
+      # Set PVE_TOKEN in a .env file next to this compose file:
+      #   PVE_TOKEN=root@pam!claude-readonly=YOUR-SECRET
+      PVE_TOKEN: "${PVE_TOKEN:?set PVE_TOKEN in .env}"
+      LISTEN_PORT: "8787"
+      # Optional: protect the endpoint with a shared secret (also set
+      # HOMELAB_STATUS_TOKEN to the same value on Vercel).
+      # STATUS_TOKEN: "${STATUS_TOKEN:-}"
