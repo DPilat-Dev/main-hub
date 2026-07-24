@@ -25,18 +25,12 @@ const BLACKBOX_URL = process.env.BLACKBOX_URL ?? ""; // e.g. http://192.168.1.66
 
 // ── Blackbox probe targets ─────────────────────────────────────────
 // The real URLs to check. Edit freely — only these are exposed publicly.
-const PROBES = [
-  { name: "OnDemand Restoration", category: "Sites", url: "https://www.ondemandrs.com" },
-  { name: "Glossa Babel", category: "Sites", url: "https://glossa-babel.vercel.app" },
-  { name: "Genuine Flooring", category: "Sites", url: "https://genuine-flooring.com" },
-  // Add your homelab subdomains (fronted by Nginx Proxy Manager), e.g.:
-  // { name: "Grafana", category: "Monitoring", url: "https://grafana.yourdomain.com" },
-  // { name: "Jellyfin", category: "Media", url: "https://jellyfin.yourdomain.com" },
-];
 const PROBE_MODULE = process.env.PROBE_MODULE ?? "http_2xx";
 
-// ── Fallback: expose "is the LXC running" from Proxmox ─────────────
-// Used only when BLACKBOX_URL is not set. Key = Proxmox vmid.
+// ── Service allowlist ──────────────────────────────────────────────
+// Every container here is reported with its Proxmox running status.
+// Add an optional `url` to also get live response time + SSL expiry from
+// Blackbox. Key = Proxmox vmid. Remove anything you don't want public.
 const SERVICES = {
   100: { name: "Homarr", category: "Dashboard" },
   101: { name: "Jellyfin", category: "Media" },
@@ -44,11 +38,14 @@ const SERVICES = {
   103: { name: "Nginx Proxy Manager", category: "Networking" },
   104: { name: "Cloudflare Tunnel", category: "Networking" },
   105: { name: "Emby", category: "Media" },
+  106: { name: "OnDemand Restoration", category: "Sites", url: "https://www.ondemandrs.com" },
   107: { name: "Pi-hole", category: "Networking" },
   108: { name: "Plex", category: "Media" },
   109: { name: "Docker", category: "Apps" },
+  110: { name: "Blackbox Exporter", category: "Monitoring" },
   111: { name: "Grafana", category: "Monitoring" },
   112: { name: "Prometheus", category: "Monitoring" },
+  113: { name: "PVE Exporter", category: "Monitoring" },
   114: { name: "Neko Browser", category: "Apps" },
   115: { name: "Wizarr", category: "Media" },
 };
@@ -86,28 +83,25 @@ function metric(text, name) {
   return m ? Number(m[1]) : null;
 }
 
-async function probeOne({ name, category, url }) {
+// Ask Blackbox for a URL's health (latency + SSL expiry). Best-effort.
+async function probeUrl(url) {
   try {
     const text = await get(
       `${BLACKBOX_URL}/probe?target=${encodeURIComponent(url)}&module=${PROBE_MODULE}`,
     );
     const success = metric(text, "probe_success");
     const duration = metric(text, "probe_duration_seconds");
-    const httpCode = metric(text, "probe_http_status_code");
     const certExpiry = metric(text, "probe_ssl_earliest_cert_expiry");
     return {
-      name,
-      category,
-      status: success === 1 ? "running" : "down",
+      ok: success === 1,
       responseMs: duration != null ? Math.round(duration * 1000) : null,
-      httpStatus: httpCode ?? null,
       sslDaysLeft:
         certExpiry && certExpiry > 0
           ? Math.round((certExpiry * 1000 - Date.now()) / 86400000)
           : null,
     };
   } catch {
-    return { name, category, status: "down", responseMs: null };
+    return null;
   }
 }
 
@@ -116,18 +110,26 @@ async function buildStatus() {
   const node = resources.find((r) => r.type === "node");
   const guests = resources.filter((r) => r.type === "lxc" || r.type === "qemu");
 
-  let services;
-  if (BLACKBOX_URL) {
-    services = await Promise.all(PROBES.map(probeOne));
-  } else {
-    services = guests
+  // Every allowlisted container, with its Proxmox running status.
+  const services = await Promise.all(
+    guests
       .filter((g) => SERVICES[g.vmid])
-      .map((g) => ({
-        name: SERVICES[g.vmid].name,
-        category: SERVICES[g.vmid].category,
-        status: g.status,
-      }));
-  }
+      .map(async (g) => {
+        const cfg = SERVICES[g.vmid];
+        const svc = { name: cfg.name, category: cfg.category, status: g.status };
+        // Enrich with live response time where a public URL is configured.
+        if (cfg.url && BLACKBOX_URL && g.status === "running") {
+          const p = await probeUrl(cfg.url);
+          if (p) {
+            svc.responseMs = p.responseMs;
+            svc.sslDaysLeft = p.sslDaysLeft;
+            if (!p.ok) svc.status = "down";
+          }
+        }
+        return svc;
+      }),
+  );
+
   services.sort(
     (a, b) =>
       a.category.localeCompare(b.category) || a.name.localeCompare(b.name),
