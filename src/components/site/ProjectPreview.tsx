@@ -31,8 +31,17 @@ export function ProjectPreview({
         <img
           src={src}
           alt={`Preview of ${title}`}
-          loading="lazy"
+          loading="eager"
           decoding="async"
+          // If the image finished loading before React hydrated, onLoad never
+          // fires — so also check `complete` when the element mounts.
+          ref={(node) => {
+            if (!node) return;
+            if (node.complete) {
+              if (node.naturalWidth === 0) setErrored(true);
+              else setLoaded(true);
+            }
+          }}
           onLoad={() => setLoaded(true)}
           onError={() => setErrored(true)}
           className={`h-full w-full object-cover object-top transition-opacity duration-500 group-hover:scale-[1.02] motion-safe:transition-transform ${
