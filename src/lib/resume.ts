@@ -28,7 +28,7 @@ export const resume = {
   name: "David Pilat",
   title: "Software Engineer",
   summary:
-    "Software Engineer with nearly 8 years building .NET backend services, APIs, and payment and tax integrations for revenue-critical SaaS platforms. I consolidate legacy systems into shared services, build privacy compliance into data pipelines, and improve reliability through CI/CD, structured logging, and safe deployment practices.",
+    "Software Engineer with nearly 8 years building .NET backend services, APIs, payment and tax integrations, and serverless data pipelines for revenue-critical SaaS platforms. I consolidate legacy systems into shared services, build privacy compliance into data pipelines, and improve reliability through CI/CD, structured logging, and safe deployment practices.",
 
   experience: [
     {
@@ -40,20 +40,16 @@ export const resume = {
       summary:
         "Stabilizing and modernizing revenue-critical SaaS while consolidating legacy applications into a single maintainable platform.",
       highlights: [
-        "Designed and built a centralized tax service integrating the Avalara API, replacing flat tax table lookups with one service shared across websites.",
-        "Built a privacy compliance service that checks datasets and pipelines against California Delete Act (DROP) requests and excludes matching individuals.",
-        "Migrated websites to Stripe for payment processing.",
-        "Architected, built, and deployed back-end components for the consolidated site to support scalable APIs, improve performance, and replace legacy applications.",
-        "Migrated a legacy website into one consolidated site to make maintenance and deployments consistent.",
-        "Modernized legacy ETL pipelines.",
-        "Manage production websites and C# applications across C#, PHP/Laravel, and ColdFusion supporting a $40M revenue stream while cutting production incidents.",
-        "Built GitHub Actions pipelines that run unit tests, build, and publish artifacts on PRs — improving CI reliability and reducing manual release steps and errors.",
-        "Implemented structured logging with Serilog to speed debugging and incident resolution.",
-        "Documented legacy behavior and authored runbooks to shorten troubleshooting and lower MTTR.",
-        "Wrote versioned SQL migration and rollback scripts with verified backups to protect production data during deploys.",
-        "Build tools and fix bugs for production ETL pipelines, and tune SQL jobs to stabilize nightly data loads for analytics.",
-        "Refactored legacy C# modules into smaller libraries to simplify testing and reduce merge conflicts.",
-        "Authored onboarding docs and Docker Compose setups to cut new-hire environment issues and ramp time.",
+        "Designed and built a centralized tax service integrating the Avalara API, replacing flat tax table lookups across 26 websites with one shared service.",
+        "Built a company-wide privacy compliance service that checks datasets and pipelines against California Delete Act (DROP) requests and excludes matching individuals.",
+        "Migrated 10 websites from CyberSource to Stripe with no payment downtime.",
+        "Architected and deployed backend services and APIs for a consolidated platform, replacing 6 legacy applications.",
+        "Modernized 3 legacy ETL pipelines from a proprietary C++ DLL and batch file system to event-triggered serverless functions on AWS Lambda with Python, improving processing speed 1.5x.",
+        "Built a polygon tool for a legacy ETL pipeline, replacing a legacy executable with a C# API hosted on AWS and called from Lambda, cutting that stage from 3 days to 12–24 hours.",
+        "Manage 86 websites and applications across C#, PHP/Laravel, and ColdFusion, plus 16 legacy ETL pipelines, supporting a $40M revenue stream.",
+        "Built GitHub Actions CI/CD pipelines and added Serilog structured logging and runbooks, reducing manual release steps and shortening MTTR.",
+        "Wrote versioned SQL migration and rollback scripts with verified backups to protect production data.",
+        "Wrote unit and integration tests and refactored legacy C# modules into testable libraries.",
       ],
     },
     {
@@ -92,7 +88,7 @@ export const resume = {
   skills: [
     {
       label: "Languages",
-      skills: ["C#", "TypeScript", "JavaScript", "Java", "SQL", "HTML/CSS"],
+      skills: ["C#", "Python", "TypeScript", "JavaScript", "Java", "SQL", "HTML/CSS"],
     },
     {
       label: "Frameworks & Runtime",
@@ -104,7 +100,7 @@ export const resume = {
     },
     {
       label: "Cloud & DevOps",
-      skills: ["Azure", "AWS", "Docker", "CI/CD", "GitHub Actions", "Microservices"],
+      skills: ["AWS", "AWS Lambda", "Serverless", "Azure", "Docker", "CI/CD", "GitHub Actions", "Microservices"],
     },
     {
       label: "Practices",
