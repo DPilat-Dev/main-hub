@@ -3,7 +3,7 @@ export const site = {
   role: "Software Engineer",
   tagline: "I build and stabilize SaaS platforms that protect revenue and ship faster.",
   intro:
-    "Software Engineer with 8+ years shipping SaaS that protects revenue and speeds delivery. Off the clock I run my own server and self-host the apps I build — I'm as into hardware as I am software — and I treat AI as a real engineering tool, not just a feature to bolt onto a product. I care about resilient deployments, structured logging, and shipping faster across .NET and the modern web.",
+    "Software Engineer with nearly 8 years shipping SaaS that protects revenue and speeds delivery. Off the clock I run my own server and self-host the apps I build — I'm as into hardware as I am software — and I treat AI as a real engineering tool, not just a feature to bolt onto a product. I care about resilient deployments, structured logging, and shipping faster across .NET and the modern web.",
   // Rotating phrases for the hero typewriter — each completes "…I build ___".
   heroPhrases: [
     "reliable software that protects revenue.",
@@ -12,7 +12,7 @@ export const site = {
     "across software and hardware.",
   ],
   description:
-    "Software Engineer with 8+ years building and stabilizing SaaS platforms. Self-hoster, hardware tinkerer, and AI-assisted builder. Resume, projects, and writing on .NET, cloud, and reliable delivery.",
+    "Software Engineer with nearly 8 years building and stabilizing SaaS platforms. Self-hoster, hardware tinkerer, and AI-assisted builder. Resume, projects, and writing on .NET, cloud, and reliable delivery.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dpilat-dev.vercel.app",
   location: "Lynnwood, WA",
   email: "david.j.pilat@gmail.com",

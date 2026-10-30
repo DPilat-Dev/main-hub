@@ -20,6 +20,40 @@ async function main() {
   // ── Projects (showcase) ───────────────────────────────────
   const projects = [
     {
+      slug: "apollo",
+      title: "Apollo",
+      summary: "A modern, Netflix-style web client for Jellyfin.",
+      tech: ["React 19", "TypeScript", "Vite", "Tailwind CSS", "TanStack Query", "hls.js"],
+      repoUrl: "https://github.com/DPilat-Dev/Apollo",
+      featured: true,
+      sortOrder: 0,
+      description: `
+        <p>Apollo is a modern, Netflix-style web client for Jellyfin — a full-bleed
+        hero, hover-expand cards, a real player, and a complete admin dashboard. It's
+        unofficial: it talks to the standard Jellyfin REST API and runs alongside (or
+        instead of) the official web UI. Built against Jellyfin 10.11.8, with endpoints
+        verified against the server's own OpenAPI document.</p>
+        <h3>Highlights</h3>
+        <ul>
+          <li><strong>Real per-user match scores</strong> — a taste profile built from
+          your recently played titles and favourites (genres, studios, tags), not a
+          relabelled community rating.</li>
+          <li><strong>Proper playback</strong> — direct play, direct stream, or
+          transcode via hls.js, with start/progress/stopped reporting.</li>
+          <li><strong>One-command Proxmox install</strong> — a script that provisions an
+          unprivileged LXC, installs Node, builds Apollo, and runs it under systemd.</li>
+          <li><strong>Admin dashboard</strong> and Jellyseerr integration for requests.</li>
+        </ul>
+        <h3>Stack</h3>
+        <p>Vite + React 19 + TypeScript, Tailwind CSS v4, TanStack Query for caching and
+        infinite scroll, and hls.js for playback. The Jellyfin SDK's generated DTOs
+        provide types, but HTTP goes through a hand-rolled <code>fetch</code> client for
+        full control of URL shape and auth headers.</p>
+        <p>Self-hosted and open source on
+        <a href="https://github.com/DPilat-Dev/Apollo">GitHub</a>.</p>
+      `,
+    },
+    {
       slug: "ondemand-restoration",
       title: "OnDemand Restoration",
       summary:
@@ -197,6 +231,91 @@ async function main() {
     },
   });
   console.log("✔ Seeded homelab post");
+
+  // ── Post: Apollo ──────────────────────────────────────────
+  await prisma.post.upsert({
+    where: { slug: "apollo-a-netflix-style-jellyfin-client" },
+    update: {},
+    create: {
+      slug: "apollo-a-netflix-style-jellyfin-client",
+      title: "Apollo: Building a Netflix-Style Client for Jellyfin",
+      excerpt:
+        "I built a modern web client for my Jellyfin server — real per-user match scores, a proper player, and a one-command Proxmox install. Here are the engineering bits worth sharing.",
+      tags: ["jellyfin", "react", "self-hosted", "typescript"],
+      published: true,
+      publishedAt: new Date("2026-08-08T00:00:00Z"),
+      authorId: admin.id,
+      content: `
+        <p>I run Jellyfin on my homelab, and while the official web UI is capable, I
+        wanted something that felt like the streaming apps I actually use — a full-bleed
+        hero, hover-expand cards, and a player that just works. So I built
+        <strong>Apollo</strong>: a modern, Netflix-style web client for Jellyfin. It's
+        unofficial, talks to the standard Jellyfin REST API, and runs alongside (or
+        instead of) the official UI.</p>
+
+        <h2>The stack</h2>
+        <p>Apollo is a static SPA — Vite + React 19 + TypeScript, styled with Tailwind
+        CSS v4. TanStack Query handles caching, dedupe, and infinite scroll for large
+        libraries; hls.js covers transcoded streams while direct play uses the native
+        video element.</p>
+        <p>One deliberate choice: I don't use the Jellyfin SDK's generated axios client.
+        I kept its generated DTOs for types but hand-rolled a thin <code>fetch</code>
+        wrapper, because the image and streaming URLs depend on precise control of URL
+        shape and auth headers.</p>
+
+        <h2>Match scores that actually mean something</h2>
+        <p>The percentage on each card is a <em>real per-user score</em>, not a
+        relabelled community rating. Once per session Apollo builds a taste profile from
+        your 150 most recently played titles plus your favourites, counting genres,
+        studios, and tags. Favourites weigh 3× a play, rewatches get a bonus, and recent
+        viewing counts about double the oldest in the window.</p>
+        <p>Raw counts are square-root damped and normalised against your strongest term,
+        so one heavily-watched genre doesn't flatten everything else to zero. Scoring a
+        candidate blends its facet affinities (75%) with the community rating as a prior
+        (25%), and only scores facets the item actually carries — otherwise a title with
+        no tags would be punished for the omission rather than judged on what it has.</p>
+        <p>A few honest details: there's no artificial floor (real scores run 1–99, not a
+        flattering 50–99), and under five watched items there's no profile at all, so the
+        UI shows the community rating instead of inventing a match.</p>
+
+        <h2>The bug that looked like everything and nothing</h2>
+        <p>The most confusing bug I hit wasn't really my logic being wrong.
+        Unauthenticated calls succeeded — the server connected and reported its version —
+        but every <em>authenticated</em> call, including sign-in, silently never fired.</p>
+        <p>The culprit: <code>crypto.randomUUID</code>, which I used to label the browser
+        in Jellyfin's device list, is <strong>undefined on plain HTTP over a LAN
+        address</strong> because it's a secure-context-only API. It's called while
+        building the <code>Authorization</code> header, so it threw before any
+        authenticated request was even sent. Development on <code>localhost</code> never
+        sees this — localhost counts as a secure context. The fix was falling back to
+        <code>getRandomValues</code>, which has no such restriction. Lesson: test on a
+        real LAN address, not just localhost.</p>
+
+        <h2>Mixed content will ruin your day</h2>
+        <p>A related trap: the browser talks to Jellyfin directly. Serve Apollo over
+        HTTPS while pointing it at a plain <code>http://</code> LAN Jellyfin, and the
+        browser blocks every request as mixed content — the app looks completely broken,
+        with CORS-looking console errors that never say "mixed content." The answer is to
+        keep the scheme consistent: HTTPS Jellyfin, or plain-HTTP Apollo on the LAN, or
+        both behind one reverse proxy.</p>
+
+        <h2>Deploying it</h2>
+        <p>Apollo ships with Docker Compose, but the part I'm happiest with is the
+        one-command Proxmox installer — run it on the Proxmox host and it prompts for a
+        container ID, resources, storage, network, and your Jellyfin address, then creates
+        an unprivileged Debian LXC, installs Node, builds Apollo, and starts it under
+        systemd.</p>
+
+        <h2>Why bother?</h2>
+        <p>Because self-hosting should feel as good as the commercial thing it replaces.
+        Apollo is open source on
+        <a href="https://github.com/DPilat-Dev/Apollo">GitHub</a> — the kind of project
+        that scratches a real itch on my own homelab and handed me a few genuinely
+        interesting problems to solve.</p>
+      `,
+    },
+  });
+  console.log("✔ Seeded Apollo post");
 
   // ── Private dashboard links ───────────────────────────────
   const links = [

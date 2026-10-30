@@ -28,7 +28,7 @@ export const resume = {
   name: "David Pilat",
   title: "Software Engineer",
   summary:
-    "Software Engineer with 8+ years building and stabilizing SaaS platforms that protect revenue and speed delivery. I reduce production incidents and shorten MTTR through structured logging, runbooks, and automated CI/CD, and I consolidate legacy systems into maintainable, well-tested services. Focused on resilient deployments and faster feature delivery.",
+    "Software Engineer with nearly 8 years building .NET backend services, APIs, and payment and tax integrations for revenue-critical SaaS platforms. I consolidate legacy systems into shared services, build privacy compliance into data pipelines, and improve reliability through CI/CD, structured logging, and safe deployment practices.",
 
   experience: [
     {
@@ -40,14 +40,18 @@ export const resume = {
       summary:
         "Stabilizing and modernizing revenue-critical SaaS while consolidating legacy applications into a single maintainable platform.",
       highlights: [
-        "Maintain legacy applications protecting a $40M revenue stream while cutting production incidents.",
+        "Designed and built a centralized tax service integrating the Avalara API, replacing flat tax table lookups with one service shared across websites.",
+        "Built a privacy compliance service that checks datasets and pipelines against California Delete Act (DROP) requests and excludes matching individuals.",
+        "Migrated websites to Stripe for payment processing.",
         "Architected, built, and deployed back-end components for the consolidated site to support scalable APIs, improve performance, and replace legacy applications.",
         "Migrated a legacy website into one consolidated site to make maintenance and deployments consistent.",
+        "Modernized legacy ETL pipelines.",
+        "Manage production websites and C# applications across C#, PHP/Laravel, and ColdFusion supporting a $40M revenue stream while cutting production incidents.",
         "Built GitHub Actions pipelines that run unit tests, build, and publish artifacts on PRs — improving CI reliability and reducing manual release steps and errors.",
         "Implemented structured logging with Serilog to speed debugging and incident resolution.",
         "Documented legacy behavior and authored runbooks to shorten troubleshooting and lower MTTR.",
         "Wrote versioned SQL migration and rollback scripts with verified backups to protect production data during deploys.",
-        "Maintained ETL pipelines and tuned SQL jobs to stabilize nightly data loads for analytics.",
+        "Build tools and fix bugs for production ETL pipelines, and tune SQL jobs to stabilize nightly data loads for analytics.",
         "Refactored legacy C# modules into smaller libraries to simplify testing and reduce merge conflicts.",
         "Authored onboarding docs and Docker Compose setups to cut new-hire environment issues and ramp time.",
       ],
@@ -92,7 +96,7 @@ export const resume = {
     },
     {
       label: "Frameworks & Runtime",
-      skills: [".NET", "ASP.NET", "Entity Framework", "React", "Next.js", "Node.js"],
+      skills: [".NET", "ASP.NET", "Entity Framework", "REST APIs", "PHP/Laravel", "ColdFusion", "React", "Next.js", "Node.js"],
     },
     {
       label: "Data",
@@ -104,7 +108,7 @@ export const resume = {
     },
     {
       label: "Practices",
-      skills: ["Structured Logging", "Testing", "Runbooks", "Git / GitHub", "Serilog", "Hangfire"],
+      skills: ["Structured Logging", "Testing", "Runbooks", "Git / GitHub", "Serilog", "Hangfire", "Stripe", "Avalara"],
     },
   ] satisfies SkillGroup[],
 
