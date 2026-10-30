@@ -45,7 +45,7 @@ export const resume = {
         "Migrated 10 websites from CyberSource to Stripe with no payment downtime.",
         "Architected and deployed backend services and APIs for a consolidated platform, replacing 6 legacy applications.",
         "Modernized 3 legacy ETL pipelines from a proprietary C++ DLL and batch file system to event-triggered serverless functions on AWS Lambda with Python, improving processing speed 1.5x.",
-        "Built a polygon tool for a legacy ETL pipeline, replacing a legacy executable with a C# API hosted on AWS and called from Lambda, cutting that stage from 3 days to 12–24 hours.",
+        "Built a geospatial tool that generates ZIP code and carrier route polygons from lat/lon lists, replacing a legacy executable with a C# API hosted on AWS and called from Lambda, cutting that ETL stage from 3 days to 12–24 hours.",
         "Manage 86 websites and applications across C#, PHP/Laravel, and ColdFusion, plus 16 legacy ETL pipelines, supporting a $40M revenue stream.",
         "Built GitHub Actions CI/CD pipelines and added Serilog structured logging and runbooks, reducing manual release steps and shortening MTTR.",
         "Wrote versioned SQL migration and rollback scripts with verified backups to protect production data.",
