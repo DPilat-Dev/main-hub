@@ -41,7 +41,7 @@ export default async function HomePage() {
   ]);
 
   const stats = [
-    { value: "8+", label: "Years building SaaS" },
+    { value: "7+", label: "Years building SaaS" },
     { value: "$40M", label: "Revenue stream protected" },
     { value: "10%", label: "Retention lift shipped" },
   ];
